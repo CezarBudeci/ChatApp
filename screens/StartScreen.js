@@ -25,6 +25,7 @@ function Login() {
   // }, []);
 
   const handleLogin = () => {
+    setEmail(email.toLowerCase());
     auth
       .signInWithEmailAndPassword(email, psswrd)
       .then((userCredential) => {
@@ -45,7 +46,7 @@ function Login() {
           style={styles.inputFields}
           placeholder="Email"
           value={email}
-          textTransform={"lowercase"}
+          autoCapitalize = 'none'
           onChangeText={(text) => setEmail(text)}
         ></TextInput>
         <TextInput
