@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
         color: '#ACACAC',
         fontSize: 14,
         lineHeight: 18,
-        height: '80%',
+        height: '100%',
         width: '80%',
         borderBottomWidth: 1,
         borderColor: '#ACACAC',
