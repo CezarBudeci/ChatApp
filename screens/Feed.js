@@ -1,44 +1,129 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, CheckBox, Picker, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { StyleSheet, Text, TextInput, View, CheckBox, Picker, TouchableOpacity, ScrollView, Button } from 'react-native';
 import FeedComponent from '../components/FeedComponent';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { auth, firestore } from '../firebase';
+import { FlatList } from 'react-native-gesture-handler';
+import firebase from 'firebase';
+import { useEffect } from 'react';
 
-function Feed (){
-
-return (
-<View style={styles.container}>
 
 
-<Text style={styles.texttitle}>Cars</Text>
+function Feed (props){
+    const feedsRef = firestore.collection('chatroomfeeds');
+    const query = feedsRef.where('roomid', '==', props.route.params.roomId);
+    const[feeds] = useCollectionData(query, { idField: 'id' });
+    if(feeds) {
+        feeds.sort(function (a, b) {
+            return a.createdAt - b.createdAt;
+    });}
+    const[message, setMessage] = useState('');
+    const uid = auth.currentUser;
+    const[isReply, setIsReply] = useState(false);
+    const[replyDoc, setReplydoc] = useState('');
+    const[replyMess, setReplyMess] = useState('');
+    const[replyId, setReplyId] = useState('');
+    const[replyName, setReplyName] = useState('');
+    const flatlistRef = useRef();
 
+        
+    const sendMessage =  async (e) => {
+        if(message) {
+            if(isReply){
+                await feedsRef.add({
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    likes: 0,
+                    reply: {
+                        id: replyId,
+                        name: replyName,
+                        message: replyMess,
+                        messageId: replyDoc
+                    },
+                    roomid: props.route.params.roomId,
+                    sender: {
+                        id: uid.uid,
+                        name: uid.email
+                    },
+                    text: message
+                });
+            } else {
+                await feedsRef.add({
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    likes: 0,
+                    reply: '',
+                    roomid: props.route.params.roomId,
+                    sender: {
+                        id: uid.uid,
+                        name: uid.email
+                    },
+                    text: message
+                });
+            }
+            setMessage('');
+            setIsReply(false);
+        }
+        
     
-<View style={styles.feedsArea}>
-    <ScrollView>
-    <FeedComponent text = "Cezar" nameAnswer = "Jozef" answer = "bbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaast" countBtn = {24}/>
-     <FeedComponent text = "Cezar" answer = "Loooong answer teeaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaast" countBtn = {54}/>
-     <FeedComponent text = "Cezar" nameAnswer = "Jozef" answer = "Loooong answer teeaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaast" countBtn = "+"/>
-     <FeedComponent text = "Cezar" nameAnswer = "Jozef" answer = "Loooong answer teeaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaast" countBtn = {77}/>
-     <FeedComponent text = "Cezar" answer = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaast" countBtn = {11}/>
-     <FeedComponent text = "Cezar" nameAnswer = "Jozef" answer = "aaaaaaaaaadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaast" countBtn = {87}/>
-     <FeedComponent text = "Cezar" nameAnswer = "Jozef" answer = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaast" countBtn = {27}/>
-     <FeedComponent text = "Cezar" answer = "Loooong answer teeaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaast" countBtn = {99}/>
-     <FeedComponent text = "Cezar" nameAnswer = "Jozef" answer = "Loooong answer teeaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaast" countBtn = {114}/>
-     <FeedComponent text = "Cezar" answer = "Loooong answer teeaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaast" countBtn = {55}/>
-     <FeedComponent text = "Cezar" nameAnswer = "Jozef" answer = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaast" countBtn = {54}/>
-     <FeedComponent text = "Cezar" nameAnswer = "Jozef" answer = "aaaaaaaaaadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaast" countBtn = {23}/>
+    }
+    
+    
 
-    </ScrollView>
+    const chooseReply = (messid, repid, repname) => {
+        setReplydoc(messid);
+        feeds.forEach(item => {
+            if(item.id === messid) {
+                setReplyMess(item.text);
+            }
+        })
+        setReplyId(repid);
+        setReplyName(repname);
+        setIsReply(true);
+    }
 
-</View>
+    const cancelReply = () => {
+        setReplydoc('');
+        setReplyMess('');
+        setReplyId('');
+        setReplyName('');
+        setIsReply(false);
+    }
 
-<View style = {styles.viewbottom}>
-                <TextInput style = {styles.input} placeholder = "Type a message" />
-                <TouchableOpacity style = {styles.sendbtn}>
-                    <Text style = {styles.sendbtntext}>&#10140;</Text>
-                </TouchableOpacity>
+    return (
+        <View style={styles.container}>
+
+
+            <Text style={styles.texttitle}>{props.route.params.roomName}</Text>
+
+                
+            <View style={styles.feedsArea}>
+                <FlatList ref = {flatlistRef} onContentSizeChange = {() => flatlistRef.current.scrollToEnd()} data = {feeds} keyExtractor = {item => item.id} renderItem = {(item) => (
+                    <FeedComponent chooseReply = {chooseReply} id = {item.item.id} text = {{id: item.item.sender.id, name: item.item.sender.name}} nameAnswer = {item.item.reply.message} answer = {item.item.text} countBtn = {item.item.likes} />
+                )} />
+                {/* <Button title = "show" onPress = {() => console.log(flatlistRef)} /> */}
             </View>
-    
-</View>
-);
+            
+            {isReply?
+                <View>
+                    <TouchableOpacity onPress = {cancelReply}>
+                        <Text>{replyMess}</Text>
+                    </TouchableOpacity>
+                </View>
+            :
+            <Text></Text>
+            }
+            
+            <View style = {styles.viewbottom}>
+                
+                
+                    <TextInput style = {styles.input} placeholder = "Type a message" value = {message} onChangeText = {text => setMessage(text)} />
+                    <TouchableOpacity style = {styles.sendbtn} onPress = {sendMessage}>
+                        <Text style = {styles.sendbtntext}>&#10140;</Text>
+                    </TouchableOpacity>
+                
+            </View>
+            
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

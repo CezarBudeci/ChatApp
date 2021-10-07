@@ -1,68 +1,86 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, CheckBox, Picker, TouchableOpacity } from 'react-native';
-
-function CreateChatRoom (){
-    const [isSelected, setSelection] = useState(false);
-    const [selectedValue, setSelectedValue] = useState("Country");
+import { auth, firestore } from '../firebase';
+import firebase from 'firebase';
 
 
-return (
-<View style={styles.container}>
+function CreateChatRoom (props){
+  const [isSelected, setSelection] = useState(false);
+  const [selectedValue, setSelectedValue] = useState("Country");
+  const[chatroomName, setChatroomName] = useState('');
+
+  const chatroomRef = firestore.collection('chatrooms');
+
+  const createChatroom =  async (e) => {
+    await chatroomRef.add({
+      name: chatroomName,
+      private: isSelected,
+      country: selectedValue
+      
+    });
+    props.navigation.navigate('Chatlist');
+
+  }
     
-<View style={styles.centerArea}>
 
-    <Text style={styles.texttitle}>Create chat room</Text>
-  
 
-    <View style={styles.inputFirst}>
-    <TextInput style={styles.textview} placeholder = "Create a chat room" placeholderTextColor="#ACACAC"/>
-    </View>
+  return (
+    <View style={styles.container}>
+        
+      <View style={styles.centerArea}>
 
-    <View style={styles.checkboxContainer}>
-        <Text style={styles.label}>{isSelected ? "Room is private" : "Room is not private"} </Text>
-        <CheckBox
-          value={isSelected}
-          onValueChange={setSelection}
-          style={styles.checkbox}
-        />
-      </View>
-    
-      <View style={styles.inputLast}>
+          <Text style={styles.texttitle}>Create chat room</Text>
+        
 
-     {isSelected ? 
+          <View style={styles.inputFirst}>
+            <TextInput style={styles.textview} placeholder = "Create a chat room" placeholderTextColor="#ACACAC" onChangeText = {text => setChatroomName(text)} />
+          </View>
 
-     <View style={styles.pickerContainer}>
-         <Text style={styles.textview}></Text>
-         <Picker
-       selectedValue={selectedValue}
-       style={{color: '#ACACAC', height: "auto", width: "100%", fontSize: 14, fontFamily: "Roboto"}}
-       onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-     >
-       <Picker.Item style={styles.textview} label="Country" value="country" />
-       <Picker.Item style={styles.textview} label="Finland" value="fi" />
-       <Picker.Item style={styles.textview} label="Slovakia" value="sk" />
-       <Picker.Item style={styles.textview} label="Canada" value="ca" />
-
-     </Picker>
-
-     </View>
-      : 
-      <View></View>
-      }
-
-      </View>
-
-      <View style = {styles.lastbtnview}>
-                <TouchableOpacity style = {styles.lastbtn}>
-                    <Text style = {styles.lastbtntext}>Create!</Text>
-                </TouchableOpacity>
+          <View style={styles.checkboxContainer}>
+              <Text style={styles.label}>{isSelected ? "Room is private" : "Room is not private"} </Text>
+              <CheckBox
+                value={isSelected}
+                onValueChange={setSelection}
+                style={styles.checkbox}
+              />
             </View>
-     
-</View>
-    
+          
+            <View style={styles.inputLast}>
 
-</View>
-);
+              {isSelected ? 
+
+                <View style={styles.pickerContainer}>
+                    <Text style={styles.textview}></Text>
+                    <Picker
+                      selectedValue={selectedValue}
+                      style={{color: '#ACACAC', height: "auto", width: "100%", fontSize: 14, fontFamily: "Roboto"}}
+                      onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+                    >
+                      <Picker.Item style={styles.textview} label="Country" value="country" />
+                      <Picker.Item style={styles.textview} label="Finland" value="fi" />
+                      <Picker.Item style={styles.textview} label="Slovakia" value="sk" />
+                      <Picker.Item style={styles.textview} label="Canada" value="ca" />
+
+                    </Picker>
+
+                </View>
+              : 
+                  <View></View>
+              }
+
+            </View>
+
+            <View style = {styles.lastbtnview}>
+              <TouchableOpacity style = {styles.lastbtn} onPress = {createChatroom}>
+                <Text style = {styles.lastbtntext}>Create!</Text>
+              </TouchableOpacity>
+            </View>
+          
+      </View>
+        
+
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

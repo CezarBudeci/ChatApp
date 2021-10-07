@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { auth } from "../firebase";
 
-function Login() {
+function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [psswrd, setPsswrd] = useState("");
   // const navigation = useNavigation();
@@ -25,11 +25,18 @@ function Login() {
   // }, []);
 
   const handleLogin = () => {
+    setEmail(email.toLowerCase());
     auth
       .signInWithEmailAndPassword(email, psswrd)
       .then((userCredential) => {
         const user = userCredential.user;
         console.log("logged in with:", user.email);
+        
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'App' }],
+        });
+        
       })
       .catch((err) => alert(err.message));
   };
@@ -45,7 +52,7 @@ function Login() {
           style={styles.inputFields}
           placeholder="Email"
           value={email}
-          textTransform={"lowercase"}
+          autoCapitalize = 'none'
           onChangeText={(text) => setEmail(text)}
         ></TextInput>
         <TextInput
@@ -60,7 +67,7 @@ function Login() {
         <TouchableOpacity style={styles.btnSignIn} onPress={handleLogin}>
           <Text style={styles.btnTextW}>sign in</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.btnReg}>
+        <TouchableOpacity style={styles.btnReg} onPress = {() => navigation.navigate('Registration')}>
           <Text style={styles.btnTextB}>Register</Text>
         </TouchableOpacity>
         <Text style={styles.orText}>OR</Text>

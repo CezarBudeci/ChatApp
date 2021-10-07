@@ -1,24 +1,47 @@
 import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { auth, firestore } from '../firebase';
+import firebase from 'firebase';
+import { useState } from "react/cjs/react.development";
+import { useEffect } from "react";
 
 
 function FeedComponent(props) {
+    const feedsRef = firestore.collection('chatroomfeeds');
+    const[likes, setLikes] = useState(props.countBtn+1);
+    
+    useEffect(() => {
+        setLikes(props.countBtn + 1);
+    }, [props.countBtn]);
+
+    const addLike = (id) => {
+        setLikes(likes + 1)
+        feedsRef.doc(id).set({
+            likes: likes
+        }, { merge: true });
+       
+    }
 
     return(
         <View style = {styles.container}>
 
             <View style={styles.messageView}>
 
-            <TouchableOpacity style = {styles.sendbtn}>
+                <TouchableOpacity style = {styles.sendbtn} onPress = {() => addLike(props.id, props.countBtn)}>
                     <Text style = {styles.buttonText}>{props.countBtn}</Text>
                 </TouchableOpacity>
 
                 <View style={styles.nameView}>
-                <Text style = {styles.name}>{props.text}:</Text>
-                <Text style = {styles.nameAnswer}>{props.nameAnswer}&#62;</Text>
+                    
+                        <Text style = {styles.name}>{props.text.name}:</Text>
+                    
+                        <Text style = {styles.nameAnswer}>{props.nameAnswer}&#62;</Text>
+                    
                 </View>
-
-                <Text style = {styles.answer}>{props.answer}</Text>
+                <TouchableOpacity onPress = {() => props.chooseReply(props.id, props.text.id, props.text.name)}>
+                    <Text style = {styles.answer}>{props.answer}</Text>
+                </TouchableOpacity>
             </View>
 
         </View>

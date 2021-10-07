@@ -3,16 +3,20 @@ import { StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 function Room (props){
 
-return (
+    const openChatroom = () => {
+        props.navigation.navigate('Chatroom', { roomId: props.roomId, roomName: props.roomName });
+    }
 
-            <View>
-                <TouchableOpacity  style={styles.room}>
+    return (
+
+        <View>
+            <TouchableOpacity  style={styles.room} onPress = {openChatroom}>
                 <Text style={styles.roomText}>{props.roomName}</Text>
                 <Text style={styles.roomText}>({props.roomParticipants})</Text>
-                </TouchableOpacity>
-            </View>
+            </TouchableOpacity>
+        </View>
 
-);
+    );
 }
 
 const styles = StyleSheet.create({
