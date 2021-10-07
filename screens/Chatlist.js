@@ -3,7 +3,7 @@ import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import MessageListTemplate from "../components/messagelisttemplate";
 
-function ChatList() {
+function ChatList({ navigation }) {
 
     return(
         <View style = {styles.container}>
@@ -12,27 +12,22 @@ function ChatList() {
             </View>
             <SafeAreaView style = {styles.safearea}>
                 <ScrollView>
+                    <MessageListTemplate navigation = { navigation } />
+                    {/* <MessageListTemplate  />
+                    <MessageListTemplate  />
+                    <MessageListTemplate  />
+                    <MessageListTemplate  />
                     <MessageListTemplate />
-                    <MessageListTemplate />
-                    <MessageListTemplate />
-                    <MessageListTemplate />
-                    <MessageListTemplate />
-                    <MessageListTemplate />
-                    <MessageListTemplate />
-                    <MessageListTemplate />
-                    <MessageListTemplate />
-                    <MessageListTemplate />
-                    <MessageListTemplate />
-                    <MessageListTemplate />
-                    <MessageListTemplate />
-                    <MessageListTemplate />
+                    <MessageListTemplate  />
+                    <MessageListTemplate  /> */}
+                    
                 </ScrollView>
             </SafeAreaView>
-            <View style = {styles.lastbtnview}>
+            {/* <View style = {styles.lastbtnview}>
                 <TouchableOpacity style = {styles.lastbtn}>
                     <Text style = {styles.lastbtntext}>show friends</Text>
                 </TouchableOpacity>
-            </View>
+            </View> */}
             <StatusBar style = 'auto' />
         </View>
     );

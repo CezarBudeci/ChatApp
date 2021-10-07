@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, CheckBox, Picker, TouchableOpacity } from 'react-native';
-import { auth, firestore } from '../firebase';
-import firebase from 'firebase';
+import { firestore } from '../firebase';
+
 
 
 function CreateChatRoom (props){
@@ -12,13 +12,18 @@ function CreateChatRoom (props){
   const chatroomRef = firestore.collection('chatrooms');
 
   const createChatroom =  async (e) => {
-    await chatroomRef.add({
-      name: chatroomName,
-      private: isSelected,
-      country: selectedValue
-      
-    });
-    props.navigation.navigate('Chatlist');
+    if(chatroomName) {
+      await chatroomRef.add({
+        name: chatroomName,
+        private: isSelected,
+        country: selectedValue
+        
+      });
+    }
+    setChatroomName('');
+    setSelection(false);
+    setSelectedValue('Country');
+    props.navigation.goBack();
 
   }
     

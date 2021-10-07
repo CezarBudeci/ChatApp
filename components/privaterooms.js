@@ -5,9 +5,9 @@ import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { firestore } from '../firebase';
 
 
-function FilteredRooms (props){
+function PrivateRooms(props){
     const chatroomsRef = firestore.collection('chatrooms');
-    const query = chatroomsRef.where('private', '!=', true);
+    const query = chatroomsRef.where('private', '!=', false); // and add country filter by account country
     const[chatrooms] = useCollectionData(query, { idField: 'id' });
     if(chatrooms) {
         chatrooms.sort(function (a, b) {
@@ -55,4 +55,4 @@ const styles = StyleSheet.create({
     }
 
 });
-export default FilteredRooms;
+export default PrivateRooms;
