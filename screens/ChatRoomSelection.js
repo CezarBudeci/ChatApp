@@ -1,33 +1,34 @@
+import { useLinkProps } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, ScrollView } from 'react-native';
 import FilteredRooms from '../components/FilteredRooms';
 import Room from '../components/Room';
 
-function ChatRoomSelection (){
+function ChatRoomSelection ({ navigation }){
 
-return (
-<View style={styles.container}>
+    return (
+        <View style={styles.container}>
 
 
-<Text style={styles.texttitle}>Chat rooms</Text>
+            <Text style={styles.texttitle}>Chat rooms</Text>
 
-<View style = {styles.viewTop}>
+            <View style = {styles.viewTop}>
                 <TextInput style = {styles.input} placeholder = "Search for a room" />
             </View>
-    
-<View style={styles.roomsArea}>
-    <ScrollView>
-        {/* This need to be done more efficently */}
-        <FilteredRooms letter = "C">
-        </FilteredRooms>
-    </ScrollView>
+                
+            <View style={styles.roomsArea}>
+                {/* <ScrollView> */}
+                    {/* This need to be done more efficently */}
+                    <FilteredRooms letter = "C" navigation = {navigation} />
+                    
+                {/* </ScrollView> */}
+                        
+            </View>
+
+
             
-</View>
-
-
-    
-</View>
-);
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

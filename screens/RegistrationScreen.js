@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { auth } from "../firebase";
 
-function Registration() {
+function Registration({ navigation }) {
   const [email, setEmail] = useState("");
   const [psswrd, setPsswrd] = useState("");
   const [confirmPsswrd, setConfirmPsswrd] = useState("");
@@ -25,7 +25,7 @@ function Registration() {
         });
         console.log(user.email, user.country);
       })
-      .then(() => {})
+      .then(() => {navigation.goBack()})
       .catch((err) => alert(err.message));
   };
 
