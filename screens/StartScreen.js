@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { auth } from "../firebase";
+import firebase from "firebase";
 
 function Login({ navigation }) {
   const [email, setEmail] = useState("");
@@ -25,18 +26,20 @@ function Login({ navigation }) {
   // }, []);
 
   const handleLogin = () => {
-    setEmail(email.toLowerCase());
+    //Making the email to lowercase and removing whitespace
+    setEmail(email.toLowerCase().replace(/ /g, ""));
+    //Signing in and creating a session that will only end when user signs out
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     auth
       .signInWithEmailAndPassword(email, psswrd)
       .then((userCredential) => {
         const user = userCredential.user;
         console.log("logged in with:", user.email);
-        
+
         navigation.reset({
           index: 0,
-          routes: [{ name: 'App' }],
+          routes: [{ name: "App" }],
         });
-        
       })
       .catch((err) => alert(err.message));
   };
@@ -52,13 +55,13 @@ function Login({ navigation }) {
           style={styles.inputFields}
           placeholder="Email"
           value={email}
-          autoCapitalize = 'none'
-          onChangeText={(text) => setEmail(text)}
+          autoCapitalize="none"
+          onChangeText={(text) => setEmail(text.replace(/ /g, ""))}
         ></TextInput>
         <TextInput
           style={styles.inputFields}
           value={psswrd}
-          onChangeText={(text) => setPsswrd(text)}
+          onChangeText={(text) => setPsswrd(text.replace(/ /g, ""))}
           placeholder="Password"
           secureTextEntry
         ></TextInput>
@@ -67,7 +70,10 @@ function Login({ navigation }) {
         <TouchableOpacity style={styles.btnSignIn} onPress={handleLogin}>
           <Text style={styles.btnTextW}>sign in</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.btnReg} onPress = {() => navigation.navigate('Registration')}>
+        <TouchableOpacity
+          style={styles.btnReg}
+          onPress={() => navigation.navigate("Registration")}
+        >
           <Text style={styles.btnTextB}>Register</Text>
         </TouchableOpacity>
         <Text style={styles.orText}>OR</Text>
