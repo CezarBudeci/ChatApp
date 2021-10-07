@@ -7,26 +7,40 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { auth } from "../firebase";
+import { auth, firestore } from "../firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 function Registration({ navigation }) {
   const [email, setEmail] = useState("");
+  const [userName, setUserName] = useState("");
   const [psswrd, setPsswrd] = useState("");
   const [confirmPsswrd, setConfirmPsswrd] = useState("");
   const [country, setCountry] = useState("");
 
   const handleRegistration = () => {
-    auth
-      .createUserWithEmailAndPassword(email, psswrd)
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-        user.updateProfile({
-          country: "country",
-        });
-        console.log(user.email, user.country);
-      })
-      .then(() => {navigation.goBack()})
-      .catch((err) => alert(err.message));
+    if (psswrd === confirmPsswrd) {
+      auth
+        .createUserWithEmailAndPassword(email, psswrd)
+        .then((userCredentials) => {
+          const user = userCredentials.user;
+          console.log(user.email);
+
+          firestore.collection("users").doc(user.uid).set({
+            privateUser: true,
+            userEmail: email,
+            userPassword: psswrd,
+            userName: userName,
+            country: country,
+            userLvl: "",
+          });
+        })
+        .then(() => {
+          navigation.goBack();
+        })
+        .catch((err) => alert(err.message));
+    } else {
+      alert("Password did not match");
+    }
   };
 
   return (
@@ -38,26 +52,38 @@ function Registration({ navigation }) {
         <TextInput
           style={styles.inputFields}
           value={email}
-          textTransform={"lowercase"}
-          onChangeText={(text) => setEmail(text)}
+          autoCapitalize="none"
+          onChangeText={(text) => setEmail(text.replace(/ /g, ""))}
           placeholder="Email"
+          keyboardType={"email-address"}
+        ></TextInput>
+        <TextInput
+          style={styles.inputFields}
+          placeholder="Username"
+          value={userName}
+          onChangeText={(text) => setUserName(text.replace(/ /g, ""))}
         ></TextInput>
         <TextInput
           style={styles.inputFields}
           value={psswrd}
-          onChangeText={(text) => setPsswrd(text)}
+          onChangeText={(text) => setPsswrd(text.replace(/ /g, ""))}
           placeholder="Password"
+          autoCapitalize="none"
           secureTextEntry
         ></TextInput>
         <TextInput
           style={styles.inputFields}
           placeholder="Re-Password"
+          value={confirmPsswrd}
+          onChangeText={(text) => setConfirmPsswrd(text.replace(/ /g, ""))}
+          autoCapitalize="none"
+          secureTextEntry
         ></TextInput>
         <TextInput
           style={styles.inputFields}
-          placeholder="Home Country"
+          placeholder="Country"
           value={country}
-          onChangeText={(text) => setCountry(text)}
+          onChangeText={(text) => setCountry(text.replace(/ /g, ""))}
         ></TextInput>
         <TouchableOpacity style={styles.regBtn} onPress={handleRegistration}>
           <Text style={styles.btntext}>Register</Text>

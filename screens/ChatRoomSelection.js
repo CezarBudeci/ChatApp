@@ -5,8 +5,8 @@ import FilteredRooms from '../components/FilteredRooms';
 import PrivateRooms from '../components/privaterooms';
 
 
-function ChatRoomSelection ({ navigation }){
 
+function ChatRoomSelection({ navigation }) {
     return (
         <View style={styles.container}>
             <Text style={styles.texttitle}>Chat rooms</Text>
