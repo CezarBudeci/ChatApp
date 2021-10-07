@@ -31,12 +31,13 @@ function FeedComponent(props) {
                 <TouchableOpacity style = {styles.sendbtn} onPress = {() => addLike(props.id, props.countBtn)}>
                     <Text style = {styles.buttonText}>{props.countBtn}</Text>
                 </TouchableOpacity>
-
-                <View style={styles.nameView}>
-                    
-                        <Text style = {styles.name}>{props.text.name}:</Text>
-                    
+                <View style={styles.nameView}>              
+                    <Text style = {styles.name}>{props.text.name}:</Text>
+                    {props.nameAnswer ?
                         <Text style = {styles.nameAnswer}>{props.nameAnswer}&#62;</Text>
+                    :
+                    <Text></Text>
+                    }
                     
                 </View>
                 <TouchableOpacity onPress = {() => props.chooseReply(props.id, props.text.id, props.text.name)}>

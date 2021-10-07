@@ -88,6 +88,12 @@ function Feed (props){
         setIsReply(false);
     }
 
+    const scrollFunc = () => {
+        if(typeof flatlistRef.current !== 'undefined') {
+            flatlistRef.current.scrollToEnd();
+        }
+    }
+
     return (
         <View style={styles.container}>
 
@@ -96,8 +102,8 @@ function Feed (props){
 
                 
             <View style={styles.feedsArea}>
-                <FlatList ref = {flatlistRef} onContentSizeChange = {() => flatlistRef.current.scrollToEnd()} data = {feeds} keyExtractor = {item => item.id} renderItem = {(item) => (
-                    <FeedComponent chooseReply = {chooseReply} id = {item.item.id} text = {{id: item.item.sender.id, name: item.item.sender.name}} nameAnswer = {item.item.reply.message} answer = {item.item.text} countBtn = {item.item.likes} />
+                <FlatList ref = {flatlistRef} onContentSizeChange = {scrollFunc} data = {feeds} keyExtractor = {item => item.id} renderItem = {(item) => (
+                    <FeedComponent chooseReply = {chooseReply} id = {item.item.id} text = {{id: item.item.sender.id, name: item.item.sender.name}} nameAnswer = {item.item.reply.message ? item.item.reply.message : ''} answer = {item.item.text} countBtn = {item.item.likes} />
                 )} />
                 {/* <Button title = "show" onPress = {() => console.log(flatlistRef)} /> */}
             </View>
