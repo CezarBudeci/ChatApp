@@ -6,7 +6,7 @@ function MessageListTemplate({ navigation }) {
     return (
         <View style = {styles.viewmessage}>
             <Text style = {styles.textperson}>Samantha</Text>
-            <TouchableOpacity style = {styles.chatbtn} onPress = {navigation.navigate('PrivateChat')}>
+            <TouchableOpacity style = {styles.chatbtn} onPress = {() => navigation.navigate('PrivateMessage')}>
                 <Text style = {styles.textbtn}>Message here</Text>
             </TouchableOpacity>
         </View>

@@ -1,26 +1,38 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
-import { useCollectionData } from 'react-firebase-hooks/firestore';
-import { auth, firestore } from '../firebase';
-import firebase from 'firebase';
-import { useState } from "react/cjs/react.development";
-import { useEffect } from "react";
+import {  firestore } from '../firebase';
+
+
 
 
 function FeedComponent(props) {
-    const feedsRef = firestore.collection('chatroomfeeds');
     const[likes, setLikes] = useState(props.countBtn+1);
     
     useEffect(() => {
         setLikes(props.countBtn + 1);
+        
     }, [props.countBtn]);
 
+    const getLink = (id) => {
+        if(props.private) {
+            return `https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/privatechatrooms/${props.roomId}/messages/${id}/.json`;
+        } else {
+            return `https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/publicchatrooms/${props.roomId}/messages/${id}/.json`;
+        }
+    }
+
     const addLike = (id) => {
-        setLikes(likes + 1)
-        feedsRef.doc(id).set({
-            likes: likes
-        }, { merge: true });
-       
+        setLikes(likes + 1);
+        fetch(getLink(id), {
+            method: 'PATCH',
+            body: JSON.stringify({
+                likes: likes
+            })
+        })
+        .then(res => props.fetchMessages())
+        .catch(err => console.error(err));
+        
+        
     }
 
     return(

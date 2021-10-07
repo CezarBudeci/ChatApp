@@ -11,19 +11,52 @@ function CreateChatRoom (props){
 
   const chatroomRef = firestore.collection('chatrooms');
 
-  const createChatroom =  async (e) => {
+  const createChatroom =  (e) => {
     if(chatroomName) {
-      await chatroomRef.add({
-        name: chatroomName,
-        private: isSelected,
-        country: selectedValue
+      // await chatroomRef.add({
+      //   name: chatroomName,
+      //   private: isSelected,
+      //   country: selectedValue
         
-      });
+      // });
+
+      if(isSelected) {
+        fetch(`https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/privatechatrooms/.json`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            name: chatroomName,
+            private: isSelected,
+            country: selectedValue
+          })
+        })
+        .then((res) => {
+          setChatroomName('');
+          setSelection(false);
+          setSelectedValue('Country');
+          props.navigation.goBack();
+        })
+        .catch(err => console.error(err));
+      } else {
+        fetch(`https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/publicchatrooms/.json`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            name: chatroomName,
+            private: isSelected,
+            country: selectedValue
+          })
+        })
+        .then((res) => {
+          setChatroomName('');
+          setSelection(false);
+          setSelectedValue('Country');
+          props.navigation.goBack();
+        })
+        .catch(err => console.error(err));
+      }
     }
-    setChatroomName('');
-    setSelection(false);
-    setSelectedValue('Country');
-    props.navigation.goBack();
+    
 
   }
     
