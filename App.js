@@ -9,10 +9,17 @@ import CreateChatRoom from './screens/CreateChatRoom';
 import ChatRoomSelection from './screens/ChatRoomSelection';
 import Feed from './screens/Feed';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import ChatList from './screens/Chatlist';
+import FriendList from './screens/friendlist';
+import PrivateChat from './screens/privatechat';
+import ProfileScreen from './screens/ProfileScreen';
+import EditProfile from './screens/EditProfileScreen';
 
 const Stack = createStackNavigator();
 const Stack1 = createStackNavigator();
 const Stack2 = createStackNavigator();
+const Stack3 = createStackNavigator();
+const Stack4 = createStackNavigator();
 const BottomTabs = createMaterialBottomTabNavigator();
 
 const LoginStack = () => {
@@ -27,7 +34,9 @@ const AppTabs = () => {
   return (
   <BottomTabs.Navigator>
     <BottomTabs.Screen name = "Chatlist" component = {ChatroomList} />
-    <BottomTabs.Screen name = "CreateChatRoom" component = {CreateChatRoom} />
+    <BottomTabs.Screen name = "PrivateMessages" component = {MessagesStack} />
+    <BottomTabs.Screen name = "FriendList" component = {FriendList} />
+    <BottomTabs.Screen name = "ProfileScreens" component = {ProfileStack} />
   </BottomTabs.Navigator>);
 }
 
@@ -36,7 +45,26 @@ const ChatroomList = () => {
     <Stack2.Navigator>
       <Stack2.Screen name = "Chatroomlist" component = {ChatRoomSelection} options = {{ headerShown: false }} />
       <Stack2.Screen name = "Chatroom" component = {Feed} options = {{ headerShown: false }} />
+      <Stack2.Screen name = "CreateChatRoom" component = {CreateChatRoom} options = {{ headerShown: false }} />
     </Stack2.Navigator>
+  );
+}
+
+const MessagesStack = () => {
+  return(
+    <Stack3.Navigator initialRouteName = "PrivateMessages1">
+      <Stack3.Screen name = "PrivateMessages1" component = {ChatList} options = {{ headerShown: false }} />
+      <Stack3.Screen name = "PrivateChat" component = {PrivateChat} options = {{ headerShown: false }} />
+    </Stack3.Navigator>
+  );
+}
+
+const ProfileStack = () => {
+  return(
+    <Stack4.Navigator>
+      <Stack4.Screen name = "ProfileScreen" component = {ProfileScreen} options = {{ headerShown: false }} />
+      <Stack4.Screen name = "EditProfile" component = {EditProfile} options = {{ headerShown: false }} />
+    </Stack4.Navigator>
   );
 }
 

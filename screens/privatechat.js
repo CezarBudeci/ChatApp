@@ -3,7 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View, Text, SafeAreaView, ScrollView, TouchableOpacity, TextInput } from "react-native";
 import ChatMessage from "../components/chatmessage";
 
-function PrivateChat() {
+function PrivateChat({ navigation }) {
 
     return(
         <View style = {styles.container}>
