@@ -40,7 +40,7 @@ function FriendList(props) {
 const styles = StyleSheet.create({
     container: {
         marginTop: 64,
-        marginBottom: 64,
+        marginBottom: 32,
         marginLeft: 32,
         marginRight: 32,
         flex: 1,

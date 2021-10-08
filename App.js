@@ -76,7 +76,6 @@ const ProfileStack = () => {
   return(
     <Stack4.Navigator>
       <Stack4.Screen name = "EditProfile" component = {EditProfile} options = {{ headerShown: false }} />
-      
     </Stack4.Navigator>
   );
 }
