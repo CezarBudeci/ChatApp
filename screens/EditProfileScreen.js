@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
+  Picker,
   StyleSheet,
   Switch,
   Text,
@@ -10,7 +12,7 @@ import {
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { auth, firestore } from "../firebase";
 import firebase from "firebase";
-import { updatePassword } from 'firebase/auth';
+import { updatePassword } from "firebase/auth";
 import { Button } from "react-native-paper";
 
 function EditProfileScreen() {
@@ -20,15 +22,13 @@ function EditProfileScreen() {
   const currentUserEmail = uid.email;
   const [totalLikes, setTotalLikes] = useState(0);
 
-  const [isPrivate, setPrivate] = useState(true);
+  const [isPrivate, setPrivate] = useState(false);
   const toggleSwitch = () => setPrivate((previousState) => !previousState);
 
-  const [username, setUsername] = useState(
-    !isPrivate ? "" : "Private!"
-  );
+  const [username, setUsername] = useState(isPrivate ? "" : "Private!");
   const [email, setEmail] = useState(currentUserEmail);
   const [password, setPassword] = useState("");
-
+  const [country, setCountry] = useState("");
   const [userLevel, setUserLevel] = useState("");
   const [numberOfFeeds, setNumberOfFeed] = useState(0);
   const [numberOfLikes, setNumberOfLikes] = useState(0);
@@ -40,26 +40,30 @@ function EditProfileScreen() {
       .firestore()
       .collection("users")
       .doc(currentUserID)
-      .set({
-        privateUser: isPrivate,
+      .update({
+        privateUser: !isPrivate,
         userEmail: email,
         // userID: currentUserID,
         userName: username,
         userLevel: userLevel,
         // userPassword: password,
         numberOfFeeds: 0,
-        numberOfLikes: 0
+        numberOfLikes: 0,
+        country: country,
       })
       .then(() => {
         console.log("User updated!");
       });
-    if(password) {
-      uid.updatePassword(password).then(() => console.log('success')).catch(err => console.error(err));
-      setPassword('');
-      
+    if (password) {
+      uid
+        .updatePassword(password)
+        .then(() => console.log("success"))
+        .catch((err) => console.error(err));
+      setPassword("");
     }
-  }
+  };
 
+  // Working
   const getProfileData = () => {
     firebase
       .firestore()
@@ -70,14 +74,15 @@ function EditProfileScreen() {
         console.log("User exists: ", documentSnapshot.exists);
         if (documentSnapshot.exists) {
           console.log("User data: ", documentSnapshot.data());
-          setPrivate(documentSnapshot.get("privateUser"));
+          setPrivate(!documentSnapshot.get("privateUser"));
           setUsername(documentSnapshot.get("userName"));
           setEmail(documentSnapshot.get("userEmail"));
           setPassword(documentSnapshot.get("userPassword"));
           setUserLevel(documentSnapshot.get("userLevel"));
+          setCountry(documentSnapshot.get("country"));
         }
       });
-  }
+  };
 
   //Working
   const signOut = () => {
@@ -88,7 +93,7 @@ function EditProfileScreen() {
       })
       .catch((err) => alert(err.message));
   };
-//Working
+  //Working
   const deleteUser = () => {
     user
       .delete()
@@ -101,47 +106,66 @@ function EditProfileScreen() {
       });
   };
 
- //Infinite loop?
- const checkStatus = (totalLikes) => {
-  // switch (totalLikes) {
-  //   case totalLikes > 0 && totalLikes < 5:
-  //     setUserLevel("Welcome user!");
-  //     break;
-  //   case totalLikes > 5 && totalLikes < 11:
-  //     setUserLevel("This is just beginning, keep going!");
-  //     break;
-  //   case totalLikes > 10 && totalLikes < 16:
-  //     setUserLevel("Are you start to like it?");
-  //     break;
-  //   case totalLikes > 15 && totalLikes < 21:
-  //     setUserLevel("Comment forewer!");
-  //     break;
-  //   default:
+  //Infinite loop?
+  const checkStatus = (totalLikes) => {
+    // switch (totalLikes) {
+    //   case totalLikes > 0 && totalLikes < 5:
+    //     setUserLevel("Welcome user!");
+    //     break;
+    //   case totalLikes > 5 && totalLikes < 11:
+    //     setUserLevel("This is just beginning, keep going!");
+    //     break;
+    //   case totalLikes > 10 && totalLikes < 16:
+    //     setUserLevel("Are you start to like it?");
+    //     break;
+    //   case totalLikes > 15 && totalLikes < 21:
+    //     setUserLevel("Comment forewer!");
+    //     break;
+    //   default:
 
-    if(totalLikes >= 0 && totalLikes < 5) {
+    if (totalLikes >= 0 && totalLikes < 5) {
       setUserLevel("level1");
     } else if (totalLikes >= 5 && totalLikes < 10) {
       setUserLevel("level2");
     } else if (totalLikes >= 10 && totalLikes < 20) {
       setUserLevel("level3");
     }
-      
-  // }
-  console.log(totalLikes + " " + userLevel);
- }
 
- useEffect(() => {
-   checkStatus(totalLikes);
-  //  console.log(password);
-   
- }, [totalLikes]);
+    // }
+    console.log(totalLikes + " " + userLevel);
+  };
 
+  useEffect(() => {
+    checkStatus(totalLikes);
+    //  console.log(password);
+  }, [totalLikes]);
 
-  const earnedCalculation = () =>{
+  const earnedCalculation = () => {
     setEarned(numberOfFeeds / numberOfLikes);
-  }
+  };
+  useEffect(() => {
+    getProfileData();
+  }, []);
 
-  getProfileData;
+  const deleteUserAlert = () =>
+    Alert.alert(
+      "Delete!",
+      "Are you sure that you want to delete your account? This process cannot be undone!",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "DELETE",
+          onPress: () => {
+            deleteUser;
+          },
+        },
+      ],
+      { cancelable: false }
+    );
 
   // function randomUsername() {
   //   let text = "";
@@ -191,7 +215,7 @@ function EditProfileScreen() {
           onChangeText={(text) => setUsername(text)}
           editable={!isPrivate}
           maxLength={25}
-          value={!isPrivate ? username : "Username is private!"}
+          value={!isPrivate ? username : "Private"}
         ></TextInput>
 
         <View style={styles.switchBtn}>
@@ -216,6 +240,40 @@ function EditProfileScreen() {
           secureTextEntry={true}
           value={password}
         ></TextInput>
+
+        <View style={styles.pickerContainer}>
+          <Text style={styles.textview}></Text>
+          <Picker
+            country={country}
+            style={{
+              color: "#ACACAC",
+              height: "auto",
+              width: "100%",
+              fontSize: 14,
+              fontFamily: "Roboto",
+            }}
+            onValueChange={(itemValue, itemIndex) =>
+              setCountry(itemValue)
+            }
+          >
+            <Picker.Item
+              style={styles.textview}
+              label="Country"
+              value="country"
+            />
+            <Picker.Item style={styles.textview} label="Country" value="country" />
+            <Picker.Item style={styles.textview} label="Finland" value="fi" />
+            <Picker.Item style={styles.textview} label="Norway" value="nr" />
+            <Picker.Item style={styles.textview} label="Slovakia" value="sk" />
+            <Picker.Item style={styles.textview} label="Czechia" value="cz" />
+            <Picker.Item style={styles.textview} label="Canada" value="ca" />
+            <Picker.Item style={styles.textview} label="China" value="ch" />
+            <Picker.Item style={styles.textview} label="Usa" value="us" />
+            <Picker.Item style={styles.textview} label="Great Britain" value="gb" />
+            <Picker.Item style={styles.textview} label="Sweden" value="sw" />
+            <Picker.Item style={styles.textview} label="Moldava" value="ml" />
+          </Picker>
+        </View>
       </View>
 
       <View style={styles.bottomRow}>
@@ -230,15 +288,26 @@ function EditProfileScreen() {
           </TouchableOpacity>
         </View>
       </View>
-      
+
       {/* <TouchableOpacity style = {{borderColor: 'red', borderWidth: 1, width: '100%', height: 40}} onPress = {() => setTotalLikes(totalLikes + 1)}>
         <Text>Add like</Text>
       </TouchableOpacity> */}
       <View style={styles.deleteView}>
-        <TouchableOpacity onPress={deleteUser}>
-          <Text style={[styles.textBtn, { color: "red", borderWidth: 1, borderColor: 'black' }]}>Delete acount</Text>
+        <TouchableOpacity onPress={deleteUserAlert}>
+          <Text
+            style={[
+              styles.textBtn,
+              {
+                color: "red",
+                borderWidth: 1,
+                borderColor: "black",
+                width: "40%",
+              },
+            ]}
+          >
+            Delete acount
+          </Text>
         </TouchableOpacity>
-        
       </View>
     </View>
   );
@@ -372,6 +441,17 @@ const styles = StyleSheet.create({
   deleteView: {
     paddingTop: 32,
   },
+  pickerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    color: "#ACACAC"
+  },
+  textview: {
+    fontFamily: 'Roboto',
+    fontSize: 14,
+    fontWeight: 'normal',
+    color: "#ACACAC"
+},
 });
 
 export default EditProfileScreen;
