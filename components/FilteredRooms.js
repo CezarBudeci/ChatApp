@@ -1,31 +1,55 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, FlatList } from 'react-native';
 import Room from './Room';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
-import { firestore } from '../firebase';
 
 
 function FilteredRooms (props){
-    const chatroomsRef = firestore.collection('chatrooms');
-    const query = chatroomsRef.where('private', '!=', true);
-    const[chatrooms] = useCollectionData(query, { idField: 'id' });
-    if(chatrooms) {
-        chatrooms.sort(function (a, b) {
-            var nameA = a.name.toUpperCase();
-            var nameB = b.name.toUpperCase(); 
-            if (nameA < nameB) {
-                return -1;
-            }
-            if (nameA > nameB) {
-                return 1;
-            }
-            return 0;
-    });}
+    const[chatrooms, setChatrooms] = useState([]);
+    // const[filteredChat, setFilteredChat] = useState(null);
 
+    
+
+    // const searchFilterFunction = (text) => {
+        
+    //     if (text) {
+          
+    //       const newData = chatrooms.filter(function (item) {
+    //         const itemData = item.name
+    //           ? item.name.toUpperCase()
+    //           : ''.toUpperCase();
+    //         const textData = text.toUpperCase();
+    //         return itemData.indexOf(textData) > -1;
+    //       });
+    //       setFilteredChat(newData);
+          
+    //     }
+    // };
+    
+    // if(props.searchText) {
+    //     searchFilterFunction(props.searchText);
+    // }
+
+    useEffect(() => {
+        fetchRooms();
+    }, [chatrooms]);
+
+    const fetchRooms = () => {
+        fetch('https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/publicchatrooms/.json')
+        .then(res => res.json())
+        .then(data => addKeys(data))
+        .catch(err => console.error(err));
+    }
+
+    const addKeys = (data) => {
+        const keys = Object.keys(data);
+        const valueKeys = Object.values(data).map((item, index) =>
+        Object.defineProperty(item, 'id', {value: keys[index]}));
+        setChatrooms(valueKeys);
+    }
 
     return (
         <FlatList style={styles.filteredArea} data = {chatrooms} keyExtractor = {item => item.id} renderItem ={(item) => (
-            <Room roomName = {item.item.name} roomId = {item.item.id} navigation = {props.navigation} />
+            <Room private = {false} roomName = {item.item.name} roomId = {item.item.id} navigation = {props.navigation} />
         )} />
     );
 }

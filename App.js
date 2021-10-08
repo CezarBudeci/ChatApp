@@ -14,6 +14,7 @@ import FriendList from './screens/Friendlist';
 import PrivateChat from './screens/Privatechat';
 import ProfileScreen from './screens/ProfileScreen';
 import EditProfile from './screens/EditProfileScreen';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Stack = createStackNavigator();
 const Stack1 = createStackNavigator();
@@ -32,11 +33,11 @@ const LoginStack = () => {
 
 const AppTabs = () => {
   return (
-  <BottomTabs.Navigator>
-    <BottomTabs.Screen name = "Chatlist" component = {ChatroomList} />
-    <BottomTabs.Screen name = "PrivateMessages" component = {MessagesStack} />
-    <BottomTabs.Screen name = "FriendList" component = {FriendList} />
-    <BottomTabs.Screen name = "ProfileScreens" component = {ProfileStack} />
+  <BottomTabs.Navigator barStyle = {{backgroundColor: '#344955'}}>
+    <BottomTabs.Screen name = "Chatlist" component = {ChatroomList} options = {{tabBarLabel: 'Rooms', tabBarIcon: ({ color }) => (<MaterialCommunityIcons name = "forum" color = {color} size = {24} />)}} />
+    <BottomTabs.Screen name = "Messages" component = {MessagesStack} options = {{tabBarLabel: 'Messages', tabBarIcon: ({ color }) => (<MaterialCommunityIcons name = "chat-processing" color = {color} size = {24} />)}} />
+    <BottomTabs.Screen name = "FriendList" component = {FriendList} options = {{tabBarLabel: 'Friends', tabBarIcon: ({ color }) => (<MaterialCommunityIcons name = "account-group" color = {color} size = {24} />)}} />
+    <BottomTabs.Screen name = "ProfileScreens" component = {ProfileStack} options = {{tabBarLabel: 'Profile', tabBarIcon: ({ color }) => (<MaterialCommunityIcons name = "account" color = {color} size = {24} />)}} />
   </BottomTabs.Navigator>);
 }
 
@@ -52,9 +53,9 @@ const ChatroomList = () => {
 
 const MessagesStack = () => {
   return(
-    <Stack3.Navigator initialRouteName = "PrivateMessages1">
-      <Stack3.Screen name = "PrivateMessages1" component = {ChatList} options = {{ headerShown: false }} />
-      <Stack3.Screen name = "PrivateChat" component = {PrivateChat} options = {{ headerShown: false }} />
+    <Stack3.Navigator>
+      <Stack3.Screen name = "MessageList" component = {ChatList} options = {{ headerShown: false }} />
+      <Stack3.Screen name = "PrivateMessage" component = {PrivateChat} options = {{ headerShown: false }} />
     </Stack3.Navigator>
   );
 }
@@ -70,7 +71,7 @@ const ProfileStack = () => {
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <NavigationContainer >
       <Stack1.Navigator>
         <Stack1.Screen name = "Start" component = {LoginStack} options = {{ headerShown: false }} />
         <Stack1.Screen name = "App" component = {AppTabs} options = {{ headerShown: false }} />
@@ -79,3 +80,8 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+
+const styles = StyleSheet.create({
+  
+})

@@ -12,7 +12,7 @@ function ChatList({ navigation }) {
             </View>
             <SafeAreaView style = {styles.safearea}>
                 <ScrollView>
-                    <MessageListTemplate navigation = { navigation } />
+                    <MessageListTemplate navigation = {navigation} />
                     {/* <MessageListTemplate  />
                     <MessageListTemplate  />
                     <MessageListTemplate  />

@@ -1,17 +1,35 @@
-import React, { useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, View, CheckBox, Picker, TouchableOpacity, ScrollView, Button, FlatList } from 'react-native';
+import React, { useRef, useState, useEffect } from 'react';
+import { StyleSheet, Text, TextInput, View, CheckBox, Picker, TouchableOpacity, ScrollView, Button } from 'react-native';
 import FeedComponent from '../components/FeedComponent';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
-import { auth, firestore } from '../firebase';
-import firebase from 'firebase';
-import { useEffect } from 'react';
+import { auth} from '../firebase';
+import { FlatList } from 'react-native-gesture-handler';
+
 
 
 
 function Feed (props){
-    const feedsRef = firestore.collection('chatroomfeeds');
-    const query = feedsRef.where('roomid', '==', props.route.params.roomId);
-    const[feeds] = useCollectionData(query, { idField: 'id' });
+    const[feeds, setFeeds] = useState([]);
+
+    useEffect(() => {
+        fetchMessages();
+    }, [feeds]);
+
+    const fetchMessages = () => {
+        fetch(getLink())
+        .then(res => res.json())
+        .then(data => addKeys(data))
+        .catch(err => console.error(err));
+    }
+
+    const addKeys = (data) => {
+        if(data) {
+            const keys = Object.keys(data);
+            const valueKeys = Object.values(data).map((item, index) =>
+            Object.defineProperty(item, 'id', {value: keys[index]}));
+            setFeeds(valueKeys);
+        }
+    }
+
     if(feeds) {
         feeds.sort(function (a, b) {
             return a.createdAt - b.createdAt;
@@ -25,44 +43,61 @@ function Feed (props){
     const[replyName, setReplyName] = useState('');
     const flatlistRef = useRef();
 
-        
-    const sendMessage =  async (e) => {
+    const getLink = () => {
+        if(props.route.params.private) {
+            return `https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/privatechatrooms/${props.route.params.roomId}/messages.json`;
+        } else {
+            return `https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/publicchatrooms/${props.route.params.roomId}/messages.json`;
+        }
+    }
+
+    const sendMessage = () => {
         if(message) {
-            if(isReply){
-                await feedsRef.add({
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    likes: 0,
-                    reply: {
-                        id: replyId,
-                        name: replyName,
-                        message: replyMess,
-                        messageId: replyDoc
-                    },
-                    roomid: props.route.params.roomId,
-                    sender: {
-                        id: uid.uid,
-                        name: uid.email
-                    },
-                    text: message
-                });
+            if(isReply) {
+                fetch(getLink(),
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        createdAt: Date.now(),
+                        likes: 0,
+                        reply: {
+                            id: replyId,
+                            name: replyName,
+                            message: replyMess,
+                            messageId: replyDoc
+                        },
+                        roomid: props.route.params.roomId,
+                        sender: {
+                            id: uid.uid,
+                            name: uid.email
+                        },
+                        text: message
+                    })
+                })
+                .then(res => fetchMessages())
+                .catch(err => console.error(err));
             } else {
-                await feedsRef.add({
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    likes: 0,
-                    reply: '',
-                    roomid: props.route.params.roomId,
-                    sender: {
-                        id: uid.uid,
-                        name: uid.email
-                    },
-                    text: message
-                });
+                fetch(getLink(),
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        createdAt: Date.now(),
+                        likes: 0,
+                        reply: '',
+                        roomid: props.route.params.roomId,
+                        sender: {
+                            id: uid.uid,
+                            name: uid.email
+                        },
+                        text: message
+                    })
+                })
+                .then(res => fetchMessages())
+                .catch(err => console.error(err));
             }
             setMessage('');
             setIsReply(false);
         }
-        
-    
     }
     
     
@@ -93,6 +128,7 @@ function Feed (props){
         }
     }
 
+
     return (
         <View style={styles.container}>
 
@@ -102,7 +138,7 @@ function Feed (props){
                 
             <View style={styles.feedsArea}>
                 <FlatList ref = {flatlistRef} onContentSizeChange = {scrollFunc} data = {feeds} keyExtractor = {item => item.id} renderItem = {(item) => (
-                    <FeedComponent chooseReply = {chooseReply} id = {item.item.id} text = {{id: item.item.sender.id, name: item.item.sender.name}} nameAnswer = {item.item.reply.message ? item.item.reply.message : ''} answer = {item.item.text} countBtn = {item.item.likes} />
+                    <FeedComponent private = {props.route.params.private}  fetchMessages = {fetchMessages} roomId = {props.route.params.roomId} chooseReply = {chooseReply} id = {item.item.id} text = {{id: item.item.sender.id, name: item.item.sender.name}} nameAnswer = {item.item.reply.message ? item.item.reply.message : ''} answer = {item.item.text} countBtn = {item.item.likes} />
                 )} />
                 {/* <Button title = "show" onPress = {() => console.log(flatlistRef)} /> */}
             </View>

@@ -4,7 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 function Room (props){
 
     const openChatroom = () => {
-        props.navigation.navigate('Chatroom', { roomId: props.roomId, roomName: props.roomName });
+        props.navigation.navigate('Chatroom', { roomId: props.roomId, roomName: props.roomName, private: props.private });
     }
 
     return (

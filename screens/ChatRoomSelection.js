@@ -1,20 +1,22 @@
-import React from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import FilteredRooms from '../components/FilteredRooms';
 import PrivateRooms from '../components/privaterooms';
 
 
-function ChatRoomSelection ({ navigation }){
 
+function ChatRoomSelection({ navigation }) {
+    const[searchCrit, setSearchCrit] = useState('');
     return (
         <View style={styles.container}>
             <Text style={styles.texttitle}>Chat rooms</Text>
-            <View style = {styles.viewTop}>
-                <TextInput style = {styles.input} placeholder = "Search for a room" />
-            </View>
+            {/* <View style = {styles.viewTop}>
+                <TextInput style = {styles.input} placeholder = "Search for a room" onChangeText = {text => setSearchCrit(text)} />
+            </View> */}
             <View style={styles.roomsArea}>
                 <Text style = {styles.roomtypestext}>Public rooms</Text>
-                <FilteredRooms navigation = {navigation} />
+                <FilteredRooms navigation = {navigation} searchText = {searchCrit} />
                 <Text style = {styles.roomtypestext}>Private rooms</Text>
                 <PrivateRooms navigation = {navigation} />
             </View>
