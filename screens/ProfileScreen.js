@@ -70,7 +70,7 @@ function ProfileScreen(props) {
             <Text style={styles.textStats}>Earned</Text>
           </View>
         </View>
-      
+      </View>
       <View style={styles.buttonArea}>
         <TouchableOpacity style={styles.btnAddFriend} onPress = {sendFriendRequest}>
           <Text style={styles.btnText}>Add friend</Text>
