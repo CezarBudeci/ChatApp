@@ -26,12 +26,14 @@ function Registration({ navigation }) {
           console.log(user.email);
 
           firestore.collection("users").doc(user.uid).set({
+            numberOfFeeds: 0,
+            numberOfLikes: 0,
             privateUser: true,
             userEmail: email,
-            userPassword: psswrd,
+            // userPassword: psswrd,
             userName: userName,
             country: country,
-            userLvl: "",
+            userLevel: "",
           });
         })
         .then(() => {

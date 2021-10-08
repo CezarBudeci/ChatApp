@@ -41,7 +41,7 @@ function PrivateRooms(props){
 
     return (
         <FlatList style={styles.filteredArea} data = {chatrooms} keyExtractor = {item => item.id} renderItem ={(item) => (
-            item.item.country == 'sk' ?
+            item.item.country == 'ca' ?
             <Room private = {true} roomName = {item.item.name} roomId = {item.item.id} navigation = {props.navigation} />
             : <Text></Text>
         )} />
