@@ -3,7 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View, Text, SafeAreaView, ScrollView, TouchableOpacity } from "react-native";
 import FriendComp from "../components/friendcomp";
 
-function FriendList() {
+function FriendList(props) {
 
     return(
         <View style = {styles.container}>
@@ -27,8 +27,10 @@ function FriendList() {
                     <FriendComp />
                 </ScrollView>
             </SafeAreaView>
-            <View style = {styles.viewbottom}>
-                
+            <View >
+                <TouchableOpacity onPress = {() => props.navigation.navigate('FriendRequests')}>
+                    <Text>Friend Requests</Text>
+                </TouchableOpacity>
             </View>
             <StatusBar style = 'auto' />
         </View>

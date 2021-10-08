@@ -9,6 +9,8 @@ import firebase from "firebase";
 
 function Feed (props){
     const[feeds, setFeeds] = useState([]);
+    const[username, setUsername] = useState('');
+    const[isPrivate, setIsPrivate] = useState(false);
 
     useEffect(() => {
         fetchMessages();
@@ -46,8 +48,7 @@ function Feed (props){
     const[replyMess, setReplyMess] = useState('');
     const[replyId, setReplyId] = useState('');
     const[replyName, setReplyName] = useState('');
-    const[username, setUsername] = useState('');
-    const[isPrivate, setIsPrivate] = useState(false);
+    
     const[feedNr, setFeedNr] = useState(null);
     const[fetchedLikes, setFetchedLikes] = useState(null);
     const flatlistRef = useRef();
@@ -180,7 +181,7 @@ function Feed (props){
                 
             <View style={styles.feedsArea}>
                 <FlatList ref = {flatlistRef} onContentSizeChange = {scrollFunc} data = {feeds} keyExtractor = {item => item.id} renderItem = {(item) => (
-                    <FeedComponent updateLikes = {updateLikes} private = {props.route.params.private}  fetchMessages = {fetchMessages} roomId = {props.route.params.roomId} chooseReply = {chooseReply} id = {item.item.id} text = {{id: item.item.sender.id, name: item.item.sender.name}} nameAnswer = {item.item.reply.message ? item.item.reply.message : ''} answer = {item.item.text} countBtn = {item.item.likes} />
+                    <FeedComponent navigation = {props.navigation} updateLikes = {updateLikes} private = {props.route.params.private}  fetchMessages = {fetchMessages} roomId = {props.route.params.roomId} chooseReply = {chooseReply} id = {item.item.id} text = {{id: item.item.sender.id, name: item.item.sender.name}} nameAnswer = {item.item.reply.message ? item.item.reply.message : ''} answer = {item.item.text} countBtn = {item.item.likes} />
                 )} />
                 {/* <Button title = "show" onPress = {() => console.log(flatlistRef)} /> */}
             </View>

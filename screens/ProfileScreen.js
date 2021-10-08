@@ -1,28 +1,77 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import firebase from "firebase";
+import { auth } from '../firebase';
 
-function ProfileScreen() {
+function ProfileScreen(props) {
+  
+  
+  const[level, setLevel] = useState(null);
+  const[username, setUsername] = useState(null);
+  const[feedNr, setFeedNr] = useState(null);
+  const[fetchedLikes, setFetchedLikes] = useState(null);
+  const[currentName, setCurrentName] = useState(null);
+  
+  const getProfileData = () => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(props.route.params.uid)
+      .get()
+      .then((documentSnapshot) => {
+        if (documentSnapshot.exists) {
+          setLevel(documentSnapshot.get('userLevel'));
+          setUsername(documentSnapshot.get("userName"));
+          setFeedNr(documentSnapshot.get('numberOfFeeds'));
+          setFetchedLikes(documentSnapshot.get('numberOfLikes'));
+        }
+    });
+  }
+
+  const setCurrent = () => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(auth.currentUser.uid)
+      .get()
+      .then((documentSnapshot) => {
+        if (documentSnapshot.exists) {
+          
+          setCurrentName(documentSnapshot.get('userName'));
+        }
+    });
+  }
+
+
+  getProfileData();
+  setCurrent();
+
+  const sendFriendRequest = () => {
+    firebase.firestore().collection('users').doc(props.route.params.uid).collection('friendRequests').add({uid: auth.currentUser.uid, name: currentName});
+    props.navigation.goBack();
+  }
+
   return (
     <View style={styles.profileContainer}>
       <View style={styles.profileBlock}>
         <View style={styles.profileName}>
-          <Text style={styles.header}> Profile69 </Text>
+          <Text style={styles.header}> {username} </Text>
         </View>
         <View style={styles.profileComentLvl}>
-          <Text style={styles.contentText}> Comentor lvl 4</Text>
+          <Text style={styles.contentText}> {level} </Text>
         </View>
         <View style={styles.profilePosts}>
           <Text style={[styles.contentText, styles.posts]}>
-            1567 {"\n"} Posts
+            {feedNr} {"\n"} Posts
           </Text>
           <Text style={[styles.contentText, styles.earnings]}>
-            90 {"\n"} Earned
+            {fetchedLikes} {"\n"} Earned
           </Text>
         </View>
       </View>
       <View style={styles.profileAddFriendBtn}>
-        <TouchableOpacity style={styles.btnAddFriend}>
-          <Text color={"#fffff"}>add friends</Text>
+        <TouchableOpacity style={styles.btnAddFriend} onPress = {sendFriendRequest}>
+          <Text style = {styles.btnAddFriendText}>add friend</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -113,6 +162,12 @@ const styles = StyleSheet.create({
     opacity: 100,
     borderRadius: 4,
   },
+  btnAddFriendText: {
+    color: 'white',
+    fontSize: 14,
+    lineHeight: 18,
+    textTransform: 'uppercase',
+  }
 });
 
 export default ProfileScreen;
