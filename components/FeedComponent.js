@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
-import {  firestore } from '../firebase';
+import firebase from "firebase";
 
 
 
 
 function FeedComponent(props) {
     const[likes, setLikes] = useState(props.countBtn+1);
+
     
     useEffect(() => {
         setLikes(props.countBtn + 1);
@@ -23,13 +24,16 @@ function FeedComponent(props) {
 
     const addLike = (id) => {
         setLikes(likes + 1);
+        
         fetch(getLink(id), {
             method: 'PATCH',
             body: JSON.stringify({
                 likes: likes
             })
         })
-        .then(res => props.fetchMessages())
+        .then(res => {props.updateLikes();
+            
+            props.fetchMessages();})
         .catch(err => console.error(err));
         
         

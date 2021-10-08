@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { StyleSheet, Text, TextInput, View, CheckBox, Picker, TouchableOpacity, ScrollView, Button } from 'react-native';
 import FeedComponent from '../components/FeedComponent';
-import { auth} from '../firebase';
+import { auth } from '../firebase';
 import { FlatList } from 'react-native-gesture-handler';
-
+import firebase from "firebase";
 
 
 
@@ -12,7 +12,12 @@ function Feed (props){
 
     useEffect(() => {
         fetchMessages();
+        
     }, [feeds]);
+
+    useEffect(() => {
+        getProfileData();
+    }, [isPrivate, username, fetchedLikes])
 
     const fetchMessages = () => {
         fetch(getLink())
@@ -41,7 +46,12 @@ function Feed (props){
     const[replyMess, setReplyMess] = useState('');
     const[replyId, setReplyId] = useState('');
     const[replyName, setReplyName] = useState('');
+    const[username, setUsername] = useState('');
+    const[isPrivate, setIsPrivate] = useState(false);
+    const[feedNr, setFeedNr] = useState(null);
+    const[fetchedLikes, setFetchedLikes] = useState(null);
     const flatlistRef = useRef();
+
 
     const getLink = () => {
         if(props.route.params.private) {
@@ -51,8 +61,35 @@ function Feed (props){
         }
     }
 
+    const getProfileData = () => {
+        firebase
+          .firestore()
+          .collection("users")
+          .doc(uid.uid)
+          .get()
+          .then((documentSnapshot) => {
+            if (documentSnapshot.exists) {
+              setIsPrivate(documentSnapshot.get("privateUser"));
+              setUsername(documentSnapshot.get("userName"));
+              setFeedNr(documentSnapshot.get('numberOfFeeds'));
+              setFetchedLikes(documentSnapshot.get('numberOfLikes'));
+            }
+        });
+    }
+
+    const updateFeeds = () => {
+        firebase.firestore().collection('users').doc(uid.uid).update({"numberOfFeeds": feedNr}).then(() => {}).catch(err => console.error(err));
+    }
+
+    const updateLikes = () => {
+        setFetchedLikes(fetchedLikes + 1);
+        firebase.firestore().collection('users').doc(uid.uid).update({"numberOfLikes": fetchedLikes}).then(() => {}).catch(err => console.error(err));
+    }
+         
+
     const sendMessage = () => {
         if(message) {
+            setFeedNr(feedNr + 1);
             if(isReply) {
                 fetch(getLink(),
                 {
@@ -69,13 +106,14 @@ function Feed (props){
                         roomid: props.route.params.roomId,
                         sender: {
                             id: uid.uid,
-                            name: uid.email
+                            name: !isPrivate ? username : "Private"
                         },
                         text: message
                     })
                 })
                 .then(res => fetchMessages())
                 .catch(err => console.error(err));
+                updateFeeds();
             } else {
                 fetch(getLink(),
                 {
@@ -87,13 +125,17 @@ function Feed (props){
                         roomid: props.route.params.roomId,
                         sender: {
                             id: uid.uid,
-                            name: uid.email
+                            name: !isPrivate ? username : "Private"
                         },
                         text: message
                     })
                 })
-                .then(res => fetchMessages())
+                .then(res => { 
+                    updateFeeds();
+                    fetchMessages();
+                })
                 .catch(err => console.error(err));
+                updateFeeds();
             }
             setMessage('');
             setIsReply(false);
@@ -138,7 +180,7 @@ function Feed (props){
                 
             <View style={styles.feedsArea}>
                 <FlatList ref = {flatlistRef} onContentSizeChange = {scrollFunc} data = {feeds} keyExtractor = {item => item.id} renderItem = {(item) => (
-                    <FeedComponent private = {props.route.params.private}  fetchMessages = {fetchMessages} roomId = {props.route.params.roomId} chooseReply = {chooseReply} id = {item.item.id} text = {{id: item.item.sender.id, name: item.item.sender.name}} nameAnswer = {item.item.reply.message ? item.item.reply.message : ''} answer = {item.item.text} countBtn = {item.item.likes} />
+                    <FeedComponent updateLikes = {updateLikes} private = {props.route.params.private}  fetchMessages = {fetchMessages} roomId = {props.route.params.roomId} chooseReply = {chooseReply} id = {item.item.id} text = {{id: item.item.sender.id, name: item.item.sender.name}} nameAnswer = {item.item.reply.message ? item.item.reply.message : ''} answer = {item.item.text} countBtn = {item.item.likes} />
                 )} />
                 {/* <Button title = "show" onPress = {() => console.log(flatlistRef)} /> */}
             </View>
