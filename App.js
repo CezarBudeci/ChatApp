@@ -10,8 +10,8 @@ import ChatRoomSelection from './screens/ChatRoomSelection';
 import Feed from './screens/Feed';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import ChatList from './screens/Chatlist';
-import FriendList from './screens/friendlist';
-import PrivateChat from './screens/privatechat';
+import FriendList from './screens/Friendlist';
+import PrivateChat from './screens/Privatechat';
 import ProfileScreen from './screens/ProfileScreen';
 import EditProfile from './screens/EditProfileScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -63,7 +63,7 @@ const MessagesStack = () => {
 const ProfileStack = () => {
   return(
     <Stack4.Navigator>
-      <Stack4.Screen name = "ProfileScreen" component = {ProfileScreen} options = {{ headerShown: false }} />
+      {/* <Stack4.Screen name = "ProfileScreen" component = {ProfileScreen} options = {{ headerShown: false }} /> */}
       <Stack4.Screen name = "EditProfile" component = {EditProfile} options = {{ headerShown: false }} />
     </Stack4.Navigator>
   );

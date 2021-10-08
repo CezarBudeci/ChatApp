@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { StyleSheet, Text, TextInput, View, CheckBox, Picker, TouchableOpacity, ScrollView, Button } from 'react-native';
 import FeedComponent from '../components/FeedComponent';
-
 import { auth} from '../firebase';
 import { FlatList } from 'react-native-gesture-handler';
 
