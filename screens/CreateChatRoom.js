@@ -96,8 +96,15 @@ function CreateChatRoom (props){
                     >
                       <Picker.Item style={styles.textview} label="Country" value="country" />
                       <Picker.Item style={styles.textview} label="Finland" value="fi" />
+                      <Picker.Item style={styles.textview} label="Norway" value="nr" />
                       <Picker.Item style={styles.textview} label="Slovakia" value="sk" />
+                      <Picker.Item style={styles.textview} label="Czechia" value="cz" />
                       <Picker.Item style={styles.textview} label="Canada" value="ca" />
+                      <Picker.Item style={styles.textview} label="China" value="ch" />
+                      <Picker.Item style={styles.textview} label="Usa" value="us" />
+                      <Picker.Item style={styles.textview} label="Great Britain" value="gb" />
+                      <Picker.Item style={styles.textview} label="Sweden" value="sw" />
+                      <Picker.Item style={styles.textview} label="Moldava" value="ml" />
 
                     </Picker>
 
