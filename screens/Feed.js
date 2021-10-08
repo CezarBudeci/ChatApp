@@ -1,9 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, View, CheckBox, Picker, TouchableOpacity, ScrollView, Button } from 'react-native';
+import { StyleSheet, Text, TextInput, View, CheckBox, Picker, TouchableOpacity, ScrollView, Button, FlatList } from 'react-native';
 import FeedComponent from '../components/FeedComponent';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { auth, firestore } from '../firebase';
-import { FlatList } from 'react-native-gesture-handler';
 import firebase from 'firebase';
 import { useEffect } from 'react';
 

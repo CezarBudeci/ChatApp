@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Switch,
@@ -7,50 +7,238 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useCollectionData } from "react-firebase-hooks/firestore";
+import { auth, firestore } from "../firebase";
+import firebase from "firebase";
+import { updatePassword } from 'firebase/auth';
+import { Button } from "react-native-paper";
 
-function EditProfile() {
+function EditProfileScreen() {
+  const uid = auth.currentUser;
+  const user = firebase.auth().currentUser;
+  const currentUserID = uid.uid;
+  const currentUserEmail = uid.email;
+  const [totalLikes, setTotalLikes] = useState(0);
+
+  const [isPrivate, setPrivate] = useState(true);
+  const toggleSwitch = () => setPrivate((previousState) => !previousState);
+
+  const [username, setUsername] = useState(
+    !isPrivate ? "" : "Private!"
+  );
+  const [email, setEmail] = useState(currentUserEmail);
+  const [password, setPassword] = useState("");
+
+  const [userLevel, setUserLevel] = useState("");
+  const [numberOfFeeds, setNumberOfFeed] = useState(0);
+  const [numberOfLikes, setNumberOfLikes] = useState(0);
+  const [earned, setEarned] = useState(null);
+
+  // Working
+  const editProfile = () => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(currentUserID)
+      .set({
+        privateUser: isPrivate,
+        userEmail: email,
+        // userID: currentUserID,
+        userName: username,
+        userLevel: userLevel,
+        // userPassword: password,
+        numberOfFeeds: 0,
+        numberOfLikes: 0
+      })
+      .then(() => {
+        console.log("User updated!");
+      });
+    if(password) {
+      uid.updatePassword(password).then(() => console.log('success')).catch(err => console.error(err));
+      setPassword('');
+      
+    }
+  }
+
+  const getProfileData = () => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(currentUserID)
+      .get()
+      .then((documentSnapshot) => {
+        console.log("User exists: ", documentSnapshot.exists);
+        if (documentSnapshot.exists) {
+          console.log("User data: ", documentSnapshot.data());
+          setPrivate(documentSnapshot.get("privateUser"));
+          setUsername(documentSnapshot.get("userName"));
+          setEmail(documentSnapshot.get("userEmail"));
+          setPassword(documentSnapshot.get("userPassword"));
+          setUserLevel(documentSnapshot.get("userLevel"));
+        }
+      });
+  }
+
+  //Working
+  const signOut = () => {
+    auth
+      .signOut()
+      .then(() => {
+        console.log("You are signed out! Active user:", auth.currentUser);
+      })
+      .catch((err) => alert(err.message));
+  };
+//Working
+  const deleteUser = () => {
+    user
+      .delete()
+      .then(function () {
+        console.log("User account was deleted!:", auth.currentUser);
+      })
+      .catch(function (error) {
+        // An error happened.
+        alert(error.message);
+      });
+  };
+
+ //Infinite loop?
+ const checkStatus = (totalLikes) => {
+  // switch (totalLikes) {
+  //   case totalLikes > 0 && totalLikes < 5:
+  //     setUserLevel("Welcome user!");
+  //     break;
+  //   case totalLikes > 5 && totalLikes < 11:
+  //     setUserLevel("This is just beginning, keep going!");
+  //     break;
+  //   case totalLikes > 10 && totalLikes < 16:
+  //     setUserLevel("Are you start to like it?");
+  //     break;
+  //   case totalLikes > 15 && totalLikes < 21:
+  //     setUserLevel("Comment forewer!");
+  //     break;
+  //   default:
+
+    if(totalLikes >= 0 && totalLikes < 5) {
+      setUserLevel("level1");
+    } else if (totalLikes >= 5 && totalLikes < 10) {
+      setUserLevel("level2");
+    } else if (totalLikes >= 10 && totalLikes < 20) {
+      setUserLevel("level3");
+    }
+      
+  // }
+  console.log(totalLikes + " " + userLevel);
+ }
+
+ useEffect(() => {
+   checkStatus(totalLikes);
+  //  console.log(password);
+   
+ }, [totalLikes]);
+
+
+  const earnedCalculation = () =>{
+    setEarned(numberOfFeeds / numberOfLikes);
+  }
+
+  getProfileData;
+
+  // function randomUsername() {
+  //   let text = "";
+  //   let possible =
+  //     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  //   for (let i = 0; i < 10; i++)
+  //     text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  //   return "Random" + text;
+  // }
+
   return (
     <View style={styles.container}>
       <View style={styles.commentLvlBox}>
-        <Text style={styles.commentText}>Commenter level 3</Text>
+        <Text style={styles.commentText}>{userLevel}Nothing yet</Text>
       </View>
-      <View style={styles.pointsField1}>
-        <Text>1568</Text>
-        <Text>975</Text>
-        <Text>90</Text>
+
+      <View style={styles.statusView}>
+        <View style={styles.statusViewInner}>
+          <Text style={styles.numberStats}>{numberOfFeeds}44</Text>
+          <Text style={styles.textStats}>Posts</Text>
+        </View>
+        <View style={styles.statusViewInner}>
+          <Text style={styles.numberStats}>{numberOfLikes}5</Text>
+          <Text style={styles.textStats}>Points</Text>
+        </View>
+        <View style={styles.statusViewInner}>
+          <Text style={styles.numberStats}>{earned}8</Text>
+          <Text style={styles.textStats}>Earned</Text>
+        </View>
       </View>
-      <View style={styles.pointsField2}>
-        <Text>Posts</Text>
-        <Text>Points</Text>
-        <Text>Earned</Text>
-      </View>
+
       <View style={styles.btnField}>
         <TouchableOpacity>
-          <Text>Show Friends</Text>
+          <Text style={styles.textBtn}>Show Friends</Text>
         </TouchableOpacity>
         <TouchableOpacity>
-          <Text>Settings</Text>
+          <Text style={styles.textBtn}>Settings</Text>
         </TouchableOpacity>
       </View>
+
       <View style={styles.editInputs}>
         <TextInput
           style={styles.inputsFields}
           placeholder="Profile69"
+          onChangeText={(text) => setUsername(text)}
+          editable={!isPrivate}
+          maxLength={25}
+          value={!isPrivate ? username : "Username is private!"}
         ></TextInput>
+
         <View style={styles.switchBtn}>
           <Text style={styles.switchText}> Anonymous mode </Text>
-          <Switch trackColor={{ false: "#ACACAC", true: "black" }} />
+          <Switch
+            trackColor={{ false: "#ACACAC", true: "black" }}
+            thumbColor={isPrivate ? "#f5dd4b" : "#f4f3f4"}
+            onValueChange={toggleSwitch}
+            value={isPrivate}
+          />
         </View>
-        <TextInput style={styles.inputsFields} placeholder="Email"></TextInput>
+        <TextInput
+          style={styles.inputsFields}
+          placeholder="Email"
+          onChangeText={(text) => setEmail(text)}
+          value={email}
+        ></TextInput>
         <TextInput
           style={styles.inputsFields}
           placeholder="Password"
+          onChangeText={(text) => setPassword(text)}
+          secureTextEntry={true}
+          value={password}
         ></TextInput>
       </View>
-      <View style={styles.delProfile}>
-        <TouchableOpacity style={styles.btnDelProf}>
-          <Text style={styles.btnText}>Delete Profile</Text>
+
+      <View style={styles.bottomRow}>
+        <View>
+          <TouchableOpacity style={styles.btnLogOut} onPress={signOut}>
+            <Text style={[styles.btnText, { color: "black" }]}>Log out</Text>
+          </TouchableOpacity>
+        </View>
+        <View>
+          <TouchableOpacity style={styles.btnSave} onPress={editProfile}>
+            <Text style={styles.btnText}>Save profile</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      
+      {/* <TouchableOpacity style = {{borderColor: 'red', borderWidth: 1, width: '100%', height: 40}} onPress = {() => setTotalLikes(totalLikes + 1)}>
+        <Text>Add like</Text>
+      </TouchableOpacity> */}
+      <View style={styles.deleteView}>
+        <TouchableOpacity onPress={deleteUser}>
+          <Text style={[styles.textBtn, { color: "red", borderWidth: 1, borderColor: 'black' }]}>Delete acount</Text>
         </TouchableOpacity>
+        
       </View>
     </View>
   );
@@ -58,13 +246,14 @@ function EditProfile() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingTop: "20%",
-    backgroundColor: "#fff",
-    // alignItems: "center",
-    // justifyContent: "center",
-    padding: 20,
-    // alignContent: "center",
+    height: "100%",
+    width: "100%",
+    paddingTop: 64,
+    paddingBottom: 32,
+    paddingLeft: 32,
+    paddingRight: 32,
+    textAlign: "center",
+    alignContent: "center",
   },
 
   commentLvlBox: {
@@ -78,25 +267,44 @@ const styles = StyleSheet.create({
     height: "10%",
     width: "100%",
     textAlignVertical: "center",
+    borderRadius: 4,
   },
   commentText: {
     fontSize: 14,
     fontWeight: "bold",
+    fontFamily: "Roboto",
   },
 
-  pointsField1: {
-    paddingTop: "10%",
+  statusView: {
+    width: "100%",
+    paddingTop: 16,
+    paddingBottom: 32,
     flexDirection: "row",
     justifyContent: "space-around",
-    alignItems: "center",
-    alignSelf: "stretch",
+  },
+  statusViewInner: {
+    flexDirection: "column",
+    alignContent: "space-around",
+  },
+  numberStats: {
+    textAlign: "center",
+    fontSize: 24,
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+    color: "black",
   },
 
-  pointsField2: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    alignSelf: "stretch",
+  textStats: {
+    fontSize: 14,
+    fontFamily: "Roboto",
+    color: "#ACACAC",
+    textAlign: "center",
+  },
+  textBtn: {
+    fontFamily: "Roboto",
+    fontSize: 14,
+    color: "#344955",
+    textTransform: "uppercase",
   },
 
   btnField: {
@@ -107,12 +315,11 @@ const styles = StyleSheet.create({
   },
 
   editInputs: {
-    paddingLeft: "10%",
-    paddingRight: "10%",
     flex: 2,
     flexDirection: "column",
     justifyContent: "space-evenly",
     alignSelf: "stretch",
+    marginBottom: 32,
   },
 
   switchBtn: {
@@ -129,25 +336,42 @@ const styles = StyleSheet.create({
     borderColor: "#ACACAC",
   },
 
-  delProfile: {
-    paddingBottom: "10%",
-  },
-
-  btnDelProf: {
+  btnSave: {
+    width: "100%",
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
     height: 36,
-    width: 286,
     backgroundColor: "#344955",
     opacity: 100,
     borderRadius: 4,
+  },
+  btnLogOut: {
+    width: "100%",
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 36,
+    backgroundColor: "#344955",
+    opacity: 0.3,
+    borderRadius: 4,
+    borderColor: "black",
+    borderWidth: 1,
   },
   btnText: {
     textTransform: "uppercase",
     fontSize: 14,
     color: "white",
+    paddingLeft: 16,
+    paddingRight: 16,
+  },
+  bottomRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  deleteView: {
+    paddingTop: 32,
   },
 });
 
-export default EditProfile;
+export default EditProfileScreen;

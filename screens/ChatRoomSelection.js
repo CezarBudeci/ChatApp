@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import FilteredRooms from '../components/FilteredRooms';
 import PrivateRooms from '../components/privaterooms';
 
