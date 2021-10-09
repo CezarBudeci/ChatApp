@@ -72,9 +72,13 @@ function ProfileScreen(props) {
         </View>
       </View>
       <View style={styles.buttonArea}>
-        <TouchableOpacity style={styles.btnAddFriend} onPress = {sendFriendRequest}>
-          <Text style={styles.btnText}>Add friend</Text>
-        </TouchableOpacity>
+        {props.route.params.friends ?
+        <Text></Text>:
+          <TouchableOpacity style={styles.btnAddFriend} onPress = {sendFriendRequest}>
+            <Text style={styles.btnText}>Add friend</Text>
+          </TouchableOpacity>
+        }
+        
       </View>
     </View>
   );

@@ -1,16 +1,29 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { auth, firestore } from '../firebase';
 
-function MessageListTemplate({ navigation }) {
 
+function MessageListTemplate(props) {
+    const[roomData, setRoomData] = useState(null);
+
+
+    const getRoomId = () => {
+        firestore.collection('users').doc(auth.currentUser.uid).collection('friends').doc(props.friendId).get().then((doc) => {if(doc.exists) {setRoomData(doc.data())} else {console.error("no such document")}}).catch(err => console.error(err));
+    }
+    
+    
+    useEffect(() => {
+        getRoomId();
+    }, []);
+
+    
     return (
         <View style = {styles.viewmessage}>
-            <Text style = {styles.textperson}>Samantha</Text>
-            <TouchableOpacity style = {styles.chatbtn} onPress = {() => navigation.navigate('PrivateMessage')}>
-                <Text style = {styles.textbtn}>Message here</Text>
+            <TouchableOpacity style = {styles.chatbtn} onPress = {() => props.navigation.navigate('PrivateMessage', { name: props.friendName, friendId: props.friendId, roomData: roomData})}>
+                <Text style = {styles.textperson}>{props.friendName}</Text>
             </TouchableOpacity>
         </View>
-        //the text will be subsituted with props
+        
     );
 }
 
@@ -18,22 +31,15 @@ const styles = StyleSheet.create({
     viewmessage: {
         borderColor: '#ACACAC',
         borderBottomWidth: 1,
-        marginTop: 8,
+        marginTop: 16,
     },
     textperson: {
         fontSize: 14,
         fontFamily: 'Roboto',
         color: '#ACACAC',
-        marginBottom: 8,
     },
     chatbtn: {
         paddingBottom: 8,
-    },
-    textbtn: {
-        fontSize: 14,
-        fontFamily: 'Roboto',
-        fontStyle: 'normal',
-        color: 'black',
     },
 });
 
