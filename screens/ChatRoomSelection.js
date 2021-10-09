@@ -3,6 +3,7 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import FilteredRooms from "../components/FilteredRooms";
 import PrivateRooms from "../components/privaterooms";
+import { auth } from '../firebase';
 
 function ChatRoomSelection({ navigation }) {
   const [searchCrit, setSearchCrit] = useState("");
@@ -15,16 +16,18 @@ function ChatRoomSelection({ navigation }) {
       <View style={styles.roomsArea}>
         <Text style={styles.roomtypestext}>Public rooms</Text>
         <FilteredRooms navigation={navigation} searchText={searchCrit} />
-        <Text style={styles.roomtypestext}>Private rooms</Text>
-        <PrivateRooms navigation={navigation} />
+        {auth.currentUser === null ? <Text></Text> : <Text style={styles.roomtypestext}>Private rooms</Text>}
+        {auth.currentUser === null ? <Text></Text> : <PrivateRooms navigation={navigation} />}
       </View>
-      <TouchableOpacity
-        style={styles.createbtn}
-        onPress={() => navigation.navigate("CreateChatRoom")}
-      >
-        <Text style={styles.btnText}>Create a chatroom</Text>
-      </TouchableOpacity>
+        {auth.currentUser === null ? <Text></Text> : <TouchableOpacity
+          style={styles.createbtn}
+          onPress={() => navigation.navigate("CreateChatRoom")}
+        >
+          <Text style={styles.btnText}>Create a chatroom</Text>
+        </TouchableOpacity>}
     </View>
+
+    
   );
 }
 // Button must be still better centered (to be the same as profile btn)

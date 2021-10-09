@@ -19,7 +19,7 @@ function Feed (props){
     }, [feeds]);
 
     useEffect(() => {
-        getProfileData();
+        auth.currentUser === null ? () => {} : getProfileData();
     }, [isPrivate, username, fetchedLikes])
 
     const fetchMessages = () => {
@@ -43,7 +43,7 @@ function Feed (props){
             return a.createdAt - b.createdAt;
     });}
     const[message, setMessage] = useState('');
-    const uid = auth.currentUser;
+    const uid = auth.currentUser === null ? null : auth.currentUser;
     const[isReply, setIsReply] = useState(false);
     const[replyDoc, setReplydoc] = useState('');
     const[replyMess, setReplyMess] = useState('');
@@ -80,18 +80,18 @@ function Feed (props){
     }
 
     const updateFeeds = () => {
-        firebase.firestore().collection('users').doc(uid.uid).update({"numberOfFeeds": feedNr}).then(() => {}).catch(err => console.error(err));
+        auth.currentUser === null ? () => {} :firebase.firestore().collection('users').doc(uid.uid).update({"numberOfFeeds": feedNr}).then(() => {}).catch(err => console.error(err));
     }
 
     const updateLikes = () => {
         setFetchedLikes(fetchedLikes + 1);
-        firebase.firestore().collection('users').doc(uid.uid).update({"numberOfLikes": fetchedLikes}).then(() => {}).catch(err => console.error(err));
+        auth.currentUser === null ? () => {} : firebase.firestore().collection('users').doc(uid.uid).update({"numberOfLikes": fetchedLikes}).then(() => {}).catch(err => console.error(err));
     }
          
 
     const sendMessage = () => {
         if(message) {
-            setFeedNr(feedNr + 1);
+            auth.currentUser === null ? () => {} :setFeedNr(feedNr + 1);
             if(isReply) {
                 fetch(getLink(),
                 {
@@ -107,7 +107,7 @@ function Feed (props){
                         },
                         roomid: props.route.params.roomId,
                         sender: {
-                            id: uid.uid,
+                            id: auth.currentUser === null ? null : uid.uid,
                             name: isPrivate ? username : "Private"
                         },
                         text: message
@@ -126,7 +126,7 @@ function Feed (props){
                         reply: '',
                         roomid: props.route.params.roomId,
                         sender: {
-                            id: uid.uid,
+                            id: auth.currentUser === null ? null : uid.uid,
                             name: isPrivate ? username : "Private"
                         },
                         text: message

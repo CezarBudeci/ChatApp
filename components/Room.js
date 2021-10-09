@@ -1,9 +1,10 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { auth } from '../firebase';
 
 function Room(props) {
   const openChatroom = () => {
-    props.navigation.navigate("Chatroom", {
+    props.navigation.navigate(auth.currentUser === null ? "ChatroomAnon" : "Chatroom", {
       roomId: props.roomId,
       roomName: props.roomName,
       private: props.private,

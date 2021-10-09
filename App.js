@@ -30,6 +30,8 @@ const LoginStack = () => {
   <Stack.Navigator>
     <Stack.Screen name = "Login" component = {Login} options = {{ headerShown: false }} />
     <Stack.Screen name = "Registration" component = {Registration} options = {{ headerShown: false }} />
+    <Stack.Screen name = "ChatroomlistAnon" component = {ChatRoomSelection} options = {{ headerShown: false }} />
+    <Stack.Screen name = "ChatroomAnon" component = {Feed} options = {{ headerShown: false }} />
   </Stack.Navigator>);
 }
 
