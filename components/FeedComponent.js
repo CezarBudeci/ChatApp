@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import firebase from "firebase";
-import { auth } from '../firebase';
+import { auth,firestore } from '../firebase';
 
 
 
@@ -9,6 +9,13 @@ import { auth } from '../firebase';
 function FeedComponent(props) {
     const[likes, setLikes] = useState(props.countBtn+1);
     const[isPrivate, setIsPrivate] = useState((() => {if(props.text.name !== 'Private') {return true;} else {return false;}}));
+    const[isFriend, setIsFriend] = useState(false);
+
+    const checkFriend = () => {
+        firestore.collection('users').doc(auth.currentUser.uid).collection('friends').doc(props.text.id).get().then((doc) => {if(doc.exists){setIsFriend(true)} else {setIsFriend(false)}}).catch(err => console.error(err));
+    }
+
+    checkFriend();
 
     
     
@@ -52,7 +59,7 @@ function FeedComponent(props) {
                 </TouchableOpacity>
                 <View style={styles.nameView}>
                     {isPrivate?
-                    <TouchableOpacity onPress = {() => {if(props.text.id !== auth.currentUser.uid) {props.navigation.navigate('SomeProfile', { uid: props.text.id })}}}>              
+                    <TouchableOpacity onPress = {() => {if(props.text.id !== auth.currentUser.uid) {props.navigation.navigate('SomeProfile', { uid: props.text.id, friends: isFriend })}}}>              
                         <Text style = {styles.name}>{props.text.name}:</Text>
                     </TouchableOpacity>:
                     <Text style = {styles.name}>{props.text.name}:</Text>}

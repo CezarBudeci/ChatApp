@@ -1,15 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { auth, firestore } from '../firebase';
 
-function FriendComp() {
+function FriendComp(props) {
+  const[roomData, setRoomData] = useState(null);
+
+  const getRoomId = () => {
+    firestore.collection('users').doc(auth.currentUser.uid).collection('friends').doc(props.friendId).get().then((doc) => {if(doc.exists) {setRoomData(doc.data())} else {console.error("no such document")}}).catch(err => console.error(err));
+  }
+  
+  useEffect(() => {
+    getRoomId();
+  }, []);
+
   return (
     <View style={styles.viewfriend}>
-      <Text style={styles.textperson}>Samantha</Text>
+      <TouchableOpacity onPress = {() => props.navigation.navigate('FriendProfile', {uid: props.friendId, friends: true})}>
+        <Text style={styles.textperson}>{props.name}</Text>
+      </TouchableOpacity>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.deletebtn}>
+        <TouchableOpacity style={styles.deletebtn} onPress = {() => {props.deleteFriend(props.friendId, props.currentId)}}>
           <Text style={styles.textbtn1}>delete</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.openbtn}>
+        <TouchableOpacity style={styles.openbtn} onPress = {() => props.navigation.navigate('Messages', { screen: 'PrivateMessage', params: { name: props.name, friendId: props.friendId, roomData: roomData},})}>
           <Text style={styles.textbtn2}>&#10140;</Text>
         </TouchableOpacity>
       </View>

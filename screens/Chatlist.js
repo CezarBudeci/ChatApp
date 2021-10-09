@@ -1,9 +1,16 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, ScrollView, FlatList } from 'react-native';
 import MessageListTemplate from "../components/messagelisttemplate";
+import { useCollectionData } from "react-firebase-hooks/firestore";
+import { auth, firestore } from '../firebase';
+
 
 function ChatList({ navigation }) {
+    const chatsRef = firestore.collection('users').doc(auth.currentUser.uid).collection('friends');
+    const[chats] = useCollectionData(chatsRef, { idField: 'friendId' });
+
+
 
     return(
         <View style = {styles.container}>
@@ -11,23 +18,8 @@ function ChatList({ navigation }) {
                 <Text style = {styles.texttitle}>Messaging</Text>
             </View>
             <SafeAreaView style = {styles.safearea}>
-                <ScrollView>
-                    <MessageListTemplate navigation = {navigation} />
-                    {/* <MessageListTemplate  />
-                    <MessageListTemplate  />
-                    <MessageListTemplate  />
-                    <MessageListTemplate  />
-                    <MessageListTemplate />
-                    <MessageListTemplate  />
-                    <MessageListTemplate  /> */}
-                    
-                </ScrollView>
+                <FlatList data = {chats} keyExtractor = {item => item.friendId} renderItem = {item => <MessageListTemplate navigation = {navigation} friendName = {item.item.name} friendId = {item.item.friendId} />} />
             </SafeAreaView>
-            {/* <View style = {styles.lastbtnview}>
-                <TouchableOpacity style = {styles.lastbtn}>
-                    <Text style = {styles.lastbtntext}>show friends</Text>
-                </TouchableOpacity>
-            </View> */}
             <StatusBar style = 'auto' />
         </View>
     );

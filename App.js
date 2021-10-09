@@ -56,7 +56,7 @@ const ChatroomList = () => {
 
 const MessagesStack = () => {
   return(
-    <Stack3.Navigator>
+    <Stack3.Navigator initialRouteName = "MessageList">
       <Stack3.Screen name = "MessageList" component = {ChatList} options = {{ headerShown: false }} />
       <Stack3.Screen name = "PrivateMessage" component = {PrivateChat} options = {{ headerShown: false }} />
     </Stack3.Navigator>
@@ -68,6 +68,7 @@ const FriendsStack = () => {
     <Stack5.Navigator>
       <Stack5.Screen name = "FirendList" component = {FriendList} options = {{ headerShown: false }} />
       <Stack5.Screen name = "FriendRequests" component = {FriendRequestList} options = {{ headerShown: false }} />
+      <Stack5.Screen name = "FriendProfile" component = {ProfileScreen} options = {{ headerShown: false }} />
     </Stack5.Navigator>
   );
 }

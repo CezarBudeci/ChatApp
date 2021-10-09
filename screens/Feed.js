@@ -4,6 +4,7 @@ import FeedComponent from '../components/FeedComponent';
 import { auth } from '../firebase';
 import { FlatList } from 'react-native-gesture-handler';
 import firebase from "firebase";
+import BigList from 'react-native-big-list';
 
 
 
@@ -107,7 +108,7 @@ function Feed (props){
                         roomid: props.route.params.roomId,
                         sender: {
                             id: uid.uid,
-                            name: !isPrivate ? username : "Private"
+                            name: isPrivate ? username : "Private"
                         },
                         text: message
                     })
@@ -126,7 +127,7 @@ function Feed (props){
                         roomid: props.route.params.roomId,
                         sender: {
                             id: uid.uid,
-                            name: !isPrivate ? username : "Private"
+                            name: isPrivate ? username : "Private"
                         },
                         text: message
                     })
@@ -180,7 +181,7 @@ function Feed (props){
 
                 
             <View style={styles.feedsArea}>
-                <FlatList ref = {flatlistRef} onContentSizeChange = {scrollFunc} data = {feeds} keyExtractor = {item => item.id} renderItem = {(item) => (
+                <BigList ref = {flatlistRef} onContentSizeChange = {scrollFunc} data = {feeds} keyExtractor = {item => item.id} renderItem = {(item) => (
                     <FeedComponent navigation = {props.navigation} updateLikes = {updateLikes} private = {props.route.params.private}  fetchMessages = {fetchMessages} roomId = {props.route.params.roomId} chooseReply = {chooseReply} id = {item.item.id} text = {{id: item.item.sender.id, name: item.item.sender.name}} nameAnswer = {item.item.reply.message ? item.item.reply.message : ''} answer = {item.item.text} countBtn = {item.item.likes} />
                 )} />
                 {/* <Button title = "show" onPress = {() => console.log(flatlistRef)} /> */}
