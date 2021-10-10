@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  KeyboardAvoidingView,
 } from "react-native";
 import { auth } from "../firebase";
 import firebase from "firebase";
@@ -16,18 +17,9 @@ function Login({ navigation }) {
   const [psswrd, setPsswrd] = useState("");
   // const navigation = useNavigation();
 
-  // useEffect(() => {
-  //   const unsubcribe = auth.onAuthStateChanged((user) => {
-  //     if (user) {
-  //       navigation.navigate();
-  //     }
-  //   });
-  //   return unsubcribe;
-  // }, []);
-
   const handleLogin = () => {
-    //Making the email to lowercase and removing whitespace
-    setEmail(email.toLowerCase().replace(/ /g, ""));
+    // //Making the email to lowercase and removing whitespace
+    // setEmail(email.toLowerCase().replace(/ /g, ""));
     //Signing in and creating a session that will only end when user signs out
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     auth
@@ -46,9 +38,15 @@ function Login({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {/* <KeyboardAvoidingView
+        style={styles.loginForm}
+        behavior="padding"
+        keyboardVerticalOffset="0"
+      > */}
       <View style={styles.header}>
         <Text style={styles.headerText}>Let's chat!</Text>
       </View>
+
       <View style={styles.loginForm}>
         <Text style={styles.formText}>Sign in</Text>
         <TextInput
@@ -57,6 +55,7 @@ function Login({ navigation }) {
           value={email}
           autoCapitalize="none"
           onChangeText={(text) => setEmail(text.replace(/ /g, ""))}
+          keyboardType={"email-address"}
         ></TextInput>
         <TextInput
           style={styles.inputFields}
@@ -66,6 +65,7 @@ function Login({ navigation }) {
           secureTextEntry
         ></TextInput>
       </View>
+
       <View style={styles.btnStart}>
         <TouchableOpacity style={styles.btnSignIn} onPress={handleLogin}>
           <Text style={styles.btnTextW}>sign in</Text>
@@ -81,6 +81,7 @@ function Login({ navigation }) {
           <Text style={styles.btnTextB}>Join a chatroom</Text>
         </TouchableOpacity>
       </View>
+      {/* </KeyboardAvoidingView> */}
     </View>
   );
 }

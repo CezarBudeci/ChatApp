@@ -6,9 +6,20 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  KeyboardAvoidingView,
+  Picker,
 } from "react-native";
 import { auth, firestore } from "../firebase";
-import { doc, setDoc } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  getDocs,
+  where,
+  query,
+  collection,
+  onSnapshot,
+} from "firebase/firestore";
+import { get } from "react-native/Libraries/Utilities/PixelRatio";
 
 function Registration({ navigation }) {
   const [email, setEmail] = useState("");
@@ -16,6 +27,9 @@ function Registration({ navigation }) {
   const [psswrd, setPsswrd] = useState("");
   const [confirmPsswrd, setConfirmPsswrd] = useState("");
   const [country, setCountry] = useState("");
+  const [allUserNames, setAllUserNames] = useState([]);
+
+  // db = firestore?
 
   const handleRegistration = () => {
     if (psswrd === confirmPsswrd) {
@@ -26,12 +40,13 @@ function Registration({ navigation }) {
           console.log(user.email);
 
           firestore.collection("users").doc(user.uid).set({
+            numberOfFeeds: 0,
+            numberOfLikes: 0,
             privateUser: true,
             userEmail: email,
-            userPassword: psswrd,
             userName: userName,
             country: country,
-            userLvl: "",
+            userLevel: "",
           });
         })
         .then(() => {
@@ -79,12 +94,40 @@ function Registration({ navigation }) {
           autoCapitalize="none"
           secureTextEntry
         ></TextInput>
-        <TextInput
-          style={styles.inputFields}
-          placeholder="Country"
-          value={country}
-          onChangeText={(text) => setCountry(text.replace(/ /g, ""))}
-        ></TextInput>
+        <View style={styles.pickerContainer}>
+          <Text style={styles.textview}></Text>
+          <Picker
+            selectedValue={country}
+            style={{
+              color: "#ACACAC",
+              height: "auto",
+              width: "100%",
+              fontSize: 14,
+              fontFamily: "Roboto",
+            }}
+            onValueChange={(itemValue, itemIndex) => setCountry(itemValue)}
+          >
+            <Picker.Item
+              style={styles.textview}
+              label="Country"
+              value="country"
+            />
+            <Picker.Item style={styles.textview} label="Finland" value="fi" />
+            <Picker.Item style={styles.textview} label="Norway" value="nr" />
+            <Picker.Item style={styles.textview} label="Slovakia" value="sk" />
+            <Picker.Item style={styles.textview} label="Czechia" value="cz" />
+            <Picker.Item style={styles.textview} label="Canada" value="ca" />
+            <Picker.Item style={styles.textview} label="China" value="ch" />
+            <Picker.Item style={styles.textview} label="Usa" value="us" />
+            <Picker.Item
+              style={styles.textview}
+              label="Great Britain"
+              value="gb"
+            />
+            <Picker.Item style={styles.textview} label="Sweden" value="sw" />
+            <Picker.Item style={styles.textview} label="Moldava" value="ml" />
+          </Picker>
+        </View>
         <TouchableOpacity style={styles.regBtn} onPress={handleRegistration}>
           <Text style={styles.btntext}>Register</Text>
         </TouchableOpacity>
@@ -143,6 +186,19 @@ const styles = StyleSheet.create({
   btntext: {
     color: "white",
     textTransform: "uppercase",
+  },
+
+  pickerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    color: "#ACACAC",
+  },
+
+  textview: {
+    fontFamily: "Roboto",
+    fontSize: 14,
+    fontWeight: "normal",
+    color: "#ACACAC",
   },
 });
 
