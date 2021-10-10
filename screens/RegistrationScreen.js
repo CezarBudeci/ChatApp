@@ -20,6 +20,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { get } from "react-native/Libraries/Utilities/PixelRatio";
+import { useCollectionData } from "react-firebase-hooks/firestore";
 
 function Registration({ navigation }) {
   const [email, setEmail] = useState("");
@@ -30,31 +31,39 @@ function Registration({ navigation }) {
   const [allUserNames, setAllUserNames] = useState([]);
 
   // db = firestore?
+  const someRef = firestore.collection('users');
+  const query = someRef.where('userName', '==', userName);
+  const [arr] = useCollectionData(query, { idField: 'id' });
+
 
   const handleRegistration = () => {
-    if (psswrd === confirmPsswrd) {
-      auth
-        .createUserWithEmailAndPassword(email, psswrd)
-        .then((userCredentials) => {
-          const user = userCredentials.user;
-          console.log(user.email);
+    if (arr.length === 0) {
+      if (psswrd === confirmPsswrd) {
+        auth
+          .createUserWithEmailAndPassword(email, psswrd)
+          .then((userCredentials) => {
+            const user = userCredentials.user;
+            console.log(user.email);
 
-          firestore.collection("users").doc(user.uid).set({
-            numberOfFeeds: 0,
-            numberOfLikes: 0,
-            privateUser: true,
-            userEmail: email,
-            userName: userName,
-            country: country,
-            userLevel: "",
-          });
-        })
-        .then(() => {
-          navigation.goBack();
-        })
-        .catch((err) => alert(err.message));
+            firestore.collection("users").doc(user.uid).set({
+              numberOfFeeds: 0,
+              numberOfLikes: 0,
+              privateUser: true,
+              userEmail: email,
+              userName: userName,
+              country: country,
+              userLevel: "",
+            });
+          })
+          .then(() => {
+            navigation.goBack();
+          })
+          .catch((err) => alert(err.message));
+      } else {
+        alert("Password did not match");
+      }
     } else {
-      alert("Password did not match");
+      alert("Username taken u idiot. Choose another one you retard");
     }
   };
 
