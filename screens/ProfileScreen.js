@@ -1,118 +1,173 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import firebase from "firebase";
+import { auth } from '../firebase';
 
-function ProfileScreen() {
+function ProfileScreen(props) {
+  
+  
+  const[level, setLevel] = useState(null);
+  const[username, setUsername] = useState(null);
+  const[feedNr, setFeedNr] = useState(null);
+  const[fetchedLikes, setFetchedLikes] = useState(null);
+  const[currentName, setCurrentName] = useState(null);
+  
+  const getProfileData = () => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(props.route.params.uid)
+      .get()
+      .then((documentSnapshot) => {
+        if (documentSnapshot.exists) {
+          setLevel(documentSnapshot.get('userLevel'));
+          setUsername(documentSnapshot.get("userName"));
+          setFeedNr(documentSnapshot.get('numberOfFeeds'));
+          setFetchedLikes(documentSnapshot.get('numberOfLikes'));
+        }
+    });
+  }
+
+  const setCurrent = () => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(auth.currentUser.uid)
+      .get()
+      .then((documentSnapshot) => {
+        if (documentSnapshot.exists) {
+          
+          setCurrentName(documentSnapshot.get('userName'));
+        }
+    });
+  }
+
+
+  getProfileData();
+  setCurrent();
+
+  const sendFriendRequest = () => {
+    firebase.firestore().collection('users').doc(props.route.params.uid).collection('friendRequests').add({uid: auth.currentUser.uid, name: currentName});
+    props.navigation.goBack();
+  }
+
   return (
-    <View style={styles.profileContainer}>
+    <View style={styles.container}>
       <View style={styles.profileBlock}>
-        <View style={styles.profileName}>
-          <Text style={styles.header}> Profile69 </Text>
+        <View>
+          <Text style={styles.nicknameTxt}>{username}</Text>
         </View>
-        <View style={styles.profileComentLvl}>
-          <Text style={styles.contentText}> Comentor lvl 4</Text>
+        <View style={styles.commenterView}>
+          <Text style={styles.commenterTxt}>{level}</Text>
         </View>
-        <View style={styles.profilePosts}>
-          <Text style={[styles.contentText, styles.posts]}>
-            1567 {"\n"} Posts
-          </Text>
-          <Text style={[styles.contentText, styles.earnings]}>
-            90 {"\n"} Earned
-          </Text>
+        <View style={styles.statusView}>
+          <View style={styles.statusViewInner}>
+            <Text style={styles.numberStats}>{feedNr}</Text>
+            <Text style={styles.textStats}>Posts</Text>
+          </View>
+          <View style={styles.statusViewInner}>
+            <Text style={styles.numberStats}>{fetchedLikes}</Text>
+            <Text style={styles.textStats}>Earned</Text>
+          </View>
         </View>
       </View>
-      <View style={styles.profileAddFriendBtn}>
-        <TouchableOpacity style={styles.btnAddFriend}>
-          <Text color={"#fffff"}>add friends</Text>
-        </TouchableOpacity>
+      <View style={styles.buttonArea}>
+        {props.route.params.friends ?
+        <Text></Text>:
+          <TouchableOpacity style={styles.btnAddFriend} onPress = {sendFriendRequest}>
+            <Text style={styles.btnText}>Add friend</Text>
+          </TouchableOpacity>
+        }
+        
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  profileContainer: {
-    flex: 1,
+  container: {
+    height: "100%",
+    width: "100%",
     paddingTop: 64,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-    alignContent: "center",
-  },
-
-  header: {
-    fontSize: 24,
-    // fontFamily: "Roboto Condensed",
-    fontWeight: "bold",
-    color: "black",
-  },
-
-  contentText: {
-    fontSize: 24,
-    color: "black",
-    fontWeight: "bold",
-    textTransform: "uppercase",
-  },
-
-  profileBlock: {
     paddingBottom: 32,
-    flex: 4,
+    paddingLeft: 32,
+    paddingRight: 32,
+    textAlign: "center",
+    justifyContent: "space-evenly",
+  },
+  profileBlock: {
+    width: "100%",
+    height: "100%",
     flexDirection: "column",
     alignContent: "center",
     justifyContent: "center",
   },
-
-  profileName: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+  nicknameTxt: {
+    paddingBottom: 32,
+    fontSize: 24,
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+    textAlign: "center",
   },
 
-  profileComentLvl: {
-    // paddingBottom: 32,
+  commenterView: {
+    paddingTop: 64,
+    paddingBottom: 64,
+    backgroundColor: "rgba(52, 73, 85, 0.3)",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: "black",
-    backgroundColor: "#CDCDCD",
-    height: 151,
-    width: 286,
     textAlignVertical: "center",
+    borderRadius: 4,
   },
-
-  profilePosts: {
-    flex: 1,
+  commenterTxt: {
+    fontSize: 24,
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+    textAlign: "center",
+  },
+  statusView: {
+    width: "100%",
+    paddingTop: 32,
     flexDirection: "row",
     justifyContent: "space-around",
-    alignItems: "center",
-    paddingBottom: 32,
-    alignSelf: "stretch",
   },
-
-  posts: {
-    alignContent: "flex-start",
+  statusViewInner: {
+    flexDirection: "column",
+    alignContent: "space-around",
   },
-
-  earnings: {
-    alignContent: "flex-end",
-    alignItems: "center",
+  numberStats: {
+    textAlign: "center",
+    fontSize: 24,
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+    color: "black",
   },
-
-  profileAddFriendBtn: {
-    flex: 1,
+  textStats: {
+    fontSize: 14,
+    fontFamily: "Roboto",
+    color: "#ACACAC",
+    textAlign: "center",
   },
-
+  buttonArea: {
+    justifyContent: "flex-end",
+  },
   btnAddFriend: {
+    width: "100%",
+    alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
     height: 36,
-    width: 286,
-    fontSize: 14,
-    textTransform: "uppercase",
     backgroundColor: "#344955",
-    opacity: 100,
     borderRadius: 4,
   },
+  btnText: {
+    textTransform: "uppercase",
+    fontSize: 14,
+    color: "white",
+  },
+
 });
 
 export default ProfileScreen;

@@ -2,8 +2,18 @@ import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View, Text, SafeAreaView, ScrollView, TouchableOpacity } from "react-native";
 import FriendComp from "../components/friendcomp";
+import { useCollectionData } from "react-firebase-hooks/firestore";
+import { auth, firestore } from '../firebase';
 
-function FriendList() {
+function FriendList(props) {
+
+    const friendsRef = firestore.collection('users').doc(auth.currentUser.uid).collection('friends');
+    const[friends] = useCollectionData(friendsRef, { idField: 'id' });
+    // console.log(friends);
+    const deleteFriend = (friendUid, currentId) => {
+        firestore.collection('users').doc(auth.currentUser.uid).collection('friends').doc(friendUid).delete().then(() => console.log("deleted")).catch(err => console.error(err));
+        firestore.collection('users').doc(friendUid).collection('friends').doc(currentId).delete().then(() => console.log("deleted")).catch(err => console.error(err));
+    }
 
     return(
         <View style = {styles.container}>
@@ -12,24 +22,15 @@ function FriendList() {
             </View>
             <SafeAreaView style = {styles.safearea}>
                 <ScrollView>
-                    <FriendComp />
-                    <FriendComp />
-                    <FriendComp />
-                    <FriendComp />
-                    <FriendComp />
-                    <FriendComp />
-                    <FriendComp />
-                    <FriendComp />
-                    <FriendComp />
-                    <FriendComp />
-                    <FriendComp />
-                    <FriendComp />
-                    <FriendComp />
+                    {friends && friends.map((item) => <FriendComp key = {item.id} navigation = {props.navigation} name = {item.name} deleteFriend = {deleteFriend} currentId = {auth.currentUser.uid} friendId = {item.id} />)}
                 </ScrollView>
-            </SafeAreaView>
-            <View style = {styles.viewbottom}>
-                
+                <View >
+                <TouchableOpacity onPress = {() => props.navigation.navigate('FriendRequests')}>
+                    <Text>Friend Requests</Text>
+                </TouchableOpacity>
             </View>
+            </SafeAreaView>
+            
             <StatusBar style = 'auto' />
         </View>
     );
@@ -38,7 +39,7 @@ function FriendList() {
 const styles = StyleSheet.create({
     container: {
         marginTop: 64,
-        marginBottom: 64,
+        marginBottom: 32,
         marginLeft: 32,
         marginRight: 32,
         flex: 1,

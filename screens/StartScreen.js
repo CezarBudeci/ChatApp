@@ -77,7 +77,7 @@ function Login({ navigation }) {
           <Text style={styles.btnTextB}>Register</Text>
         </TouchableOpacity>
         <Text style={styles.orText}>OR</Text>
-        <TouchableOpacity style={styles.btnReg}>
+        <TouchableOpacity style={styles.btnReg} onPress = {() => navigation.navigate('ChatroomlistAnon')}> 
           <Text style={styles.btnTextB}>Join a chatroom</Text>
         </TouchableOpacity>
       </View>

@@ -1,12 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
-import {  firestore } from '../firebase';
+import firebase from "firebase";
+import { auth,firestore } from '../firebase';
 
 
 
 
 function FeedComponent(props) {
     const[likes, setLikes] = useState(props.countBtn+1);
+    const[isPrivate, setIsPrivate] = useState((() => {if(props.text.name !== 'Private') {return true;} else {return false;}}));
+    const[isFriend, setIsFriend] = useState(false);
+
+    const checkFriend = () => {
+        auth.currentUser === null ? () => {} : firestore.collection('users').doc(auth.currentUser.uid).collection('friends').doc(props.text.id).get().then((doc) => {if(doc.exists){setIsFriend(true)} else {setIsFriend(false)}}).catch(err => console.error(err));
+    }
+
+    checkFriend();
+
+    
     
     useEffect(() => {
         setLikes(props.countBtn + 1);
@@ -23,13 +34,16 @@ function FeedComponent(props) {
 
     const addLike = (id) => {
         setLikes(likes + 1);
+        
         fetch(getLink(id), {
             method: 'PATCH',
             body: JSON.stringify({
                 likes: likes
             })
         })
-        .then(res => props.fetchMessages())
+        .then(res => {props.updateLikes();
+            
+            props.fetchMessages();})
         .catch(err => console.error(err));
         
         
@@ -43,8 +57,13 @@ function FeedComponent(props) {
                 <TouchableOpacity style = {styles.sendbtn} onPress = {() => addLike(props.id, props.countBtn)}>
                     <Text style = {styles.buttonText}>{props.countBtn}</Text>
                 </TouchableOpacity>
-                <View style={styles.nameView}>              
-                    <Text style = {styles.name}>{props.text.name}:</Text>
+                <View style={styles.nameView}>
+                    {isPrivate? ( auth.currentUser !== null ?
+                    <TouchableOpacity onPress = {() => {if(props.text.id !== auth.currentUser.uid) {props.navigation.navigate('SomeProfile', { uid: props.text.id, friends: isFriend })}}}>              
+                        <Text style = {styles.name}>{props.text.name}:</Text>
+                    </TouchableOpacity>:
+                    <Text style = {styles.name}>{props.text.name}:</Text>) : <Text style = {styles.name}>{props.text.name}:</Text>}
+                    
                     {props.nameAnswer ?
                         <Text style = {styles.nameAnswer}>{props.nameAnswer}&#62;</Text>
                     :
