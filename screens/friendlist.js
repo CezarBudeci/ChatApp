@@ -8,30 +8,30 @@ import { auth, firestore } from '../firebase';
 function FriendList(props) {
 
     const friendsRef = firestore.collection('users').doc(auth.currentUser.uid).collection('friends');
-    const[friends] = useCollectionData(friendsRef, { idField: 'id' });
+    const [friends] = useCollectionData(friendsRef, { idField: 'id' });
     // console.log(friends);
     const deleteFriend = (friendUid, currentId) => {
         firestore.collection('users').doc(auth.currentUser.uid).collection('friends').doc(friendUid).delete().then(() => console.log("deleted")).catch(err => console.error(err));
         firestore.collection('users').doc(friendUid).collection('friends').doc(currentId).delete().then(() => console.log("deleted")).catch(err => console.error(err));
     }
 
-    return(
-        <View style = {styles.container}>
-            <View style = {styles.textview}>
-                <Text style = {styles.texttitle}>Friends</Text>
+    return (
+        <View style={styles.container}>
+            <View style={styles.textview}>
+                <Text style={styles.texttitle}>Friends</Text>
             </View>
-            <SafeAreaView style = {styles.safearea}>
+            <SafeAreaView style={styles.safearea}>
                 <ScrollView>
-                    {friends && friends.map((item) => <FriendComp key = {item.id} navigation = {props.navigation} name = {item.name} deleteFriend = {deleteFriend} currentId = {auth.currentUser.uid} friendId = {item.id} />)}
+                    {friends && friends.map((item) => <FriendComp key={item.id} navigation={props.navigation} name={item.name} deleteFriend={deleteFriend} currentId={auth.currentUser.uid} friendId={item.id} />)}
                 </ScrollView>
                 <View >
-                <TouchableOpacity onPress = {() => props.navigation.navigate('FriendRequests')}>
-                    <Text>Friend Requests</Text>
-                </TouchableOpacity>
-            </View>
+                    <TouchableOpacity style={styles.btnFriendReq} onPress={() => props.navigation.navigate('FriendRequests')}>
+                        <Text style={styles.friendReqTxt}>Friend Requests</Text>
+                    </TouchableOpacity>
+                </View>
             </SafeAreaView>
-            
-            <StatusBar style = 'auto' />
+
+            <StatusBar style='auto' />
         </View>
     );
 }
@@ -57,6 +57,23 @@ const styles = StyleSheet.create({
         height: '90%',
         marginBottom: 32,
     },
+
+    btnFriendReq: {
+        width: "100%",
+        alignSelf: "center",
+        alignItems: "center",
+        justifyContent: "center",
+        height: 36,
+        backgroundColor: "#344955",
+        borderRadius: 4,
+    },
+
+    friendReqTxt: {
+        fontSize: 14,
+        lineHeight: 18,
+        color: "white",
+        textTransform: "uppercase",
+    }
 });
 
 export default FriendList;

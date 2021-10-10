@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from "react-native";
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -16,6 +16,9 @@ import ProfileScreen from './screens/ProfileScreen';
 import EditProfile from './screens/EditProfileScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FriendRequestList from './screens/friendrequests';
+import { auth } from './firebase';
+import * as SecureStore from "expo-secure-store";
+
 
 const Stack = createStackNavigator();
 const Stack1 = createStackNavigator();
@@ -27,40 +30,40 @@ const BottomTabs = createMaterialBottomTabNavigator();
 
 const LoginStack = () => {
   return (
-  <Stack.Navigator>
-    <Stack.Screen name = "Login" component = {Login} options = {{ headerShown: false }} />
-    <Stack.Screen name = "Registration" component = {Registration} options = {{ headerShown: false }} />
-    <Stack.Screen name = "ChatroomlistAnon" component = {ChatRoomSelection} options = {{ headerShown: false }} />
-    <Stack.Screen name = "ChatroomAnon" component = {Feed} options = {{ headerShown: false }} />
-  </Stack.Navigator>);
+    <Stack.Navigator>
+      <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+      <Stack.Screen name="Registration" component={Registration} options={{ headerShown: false }} />
+      <Stack.Screen name="ChatroomlistAnon" component={ChatRoomSelection} options={{ headerShown: false }} />
+      <Stack.Screen name="ChatroomAnon" component={Feed} options={{ headerShown: false }} />
+    </Stack.Navigator>);
 }
 
 const AppTabs = () => {
   return (
-  <BottomTabs.Navigator barStyle = {{backgroundColor: '#344955'}}>
-    <BottomTabs.Screen name = "Chatlist" component = {ChatroomList} options = {{tabBarLabel: 'Rooms', tabBarIcon: ({ color }) => (<MaterialCommunityIcons name = "forum" color = {color} size = {24} />)}} />
-    <BottomTabs.Screen name = "Messages" component = {MessagesStack} options = {{tabBarLabel: 'Messages', tabBarIcon: ({ color }) => (<MaterialCommunityIcons name = "chat-processing" color = {color} size = {24} />)}} />
-    <BottomTabs.Screen name = "FriendList" component = {FriendsStack} options = {{tabBarLabel: 'Friends', tabBarIcon: ({ color }) => (<MaterialCommunityIcons name = "account-group" color = {color} size = {24} />)}} />
-    <BottomTabs.Screen name = "ProfileScreens" component = {ProfileStack} options = {{tabBarLabel: 'Profile', tabBarIcon: ({ color }) => (<MaterialCommunityIcons name = "account" color = {color} size = {24} />)}} />
-  </BottomTabs.Navigator>);
+    <BottomTabs.Navigator barStyle={{ backgroundColor: '#344955' }}>
+      <BottomTabs.Screen name="Chatlist" component={ChatroomList} options={{ tabBarLabel: 'Rooms', tabBarIcon: ({ color }) => (<MaterialCommunityIcons name="forum" color={color} size={24} />) }} />
+      <BottomTabs.Screen name="Messages" component={MessagesStack} options={{ tabBarLabel: 'Messages', tabBarIcon: ({ color }) => (<MaterialCommunityIcons name="chat-processing" color={color} size={24} />) }} />
+      <BottomTabs.Screen name="FriendList" component={FriendsStack} options={{ tabBarLabel: 'Friends', tabBarIcon: ({ color }) => (<MaterialCommunityIcons name="account-group" color={color} size={24} />) }} />
+      <BottomTabs.Screen name="ProfileScreens" component={ProfileStack} options={{ tabBarLabel: 'Profile', tabBarIcon: ({ color }) => (<MaterialCommunityIcons name="account" color={color} size={24} />) }} />
+    </BottomTabs.Navigator>);
 }
 
 const ChatroomList = () => {
-  return(
+  return (
     <Stack2.Navigator>
-      <Stack2.Screen name = "Chatroomlist" component = {ChatRoomSelection} options = {{ headerShown: false }} />
-      <Stack2.Screen name = "Chatroom" component = {Feed} options = {{ headerShown: false }} />
-      <Stack2.Screen name = "CreateChatRoom" component = {CreateChatRoom} options = {{ headerShown: false }} />
-      <Stack2.Screen name = "SomeProfile" component = {ProfileScreen} options = {{ headerShown: false }} />
+      <Stack2.Screen name="Chatroomlist" component={ChatRoomSelection} options={{ headerShown: false }} />
+      <Stack2.Screen name="Chatroom" component={Feed} options={{ headerShown: false }} />
+      <Stack2.Screen name="CreateChatRoom" component={CreateChatRoom} options={{ headerShown: false }} />
+      <Stack2.Screen name="SomeProfile" component={ProfileScreen} options={{ headerShown: false }} />
     </Stack2.Navigator>
   );
 }
 
 const MessagesStack = () => {
-  return(
-    <Stack3.Navigator initialRouteName = "MessageList">
-      <Stack3.Screen name = "MessageList" component = {ChatList} options = {{ headerShown: false }} />
-      <Stack3.Screen name = "PrivateMessage" component = {PrivateChat} options = {{ headerShown: false }} />
+  return (
+    <Stack3.Navigator initialRouteName="MessageList">
+      <Stack3.Screen name="MessageList" component={ChatList} options={{ headerShown: false }} />
+      <Stack3.Screen name="PrivateMessage" component={PrivateChat} options={{ headerShown: false }} />
     </Stack3.Navigator>
   );
 }
@@ -68,34 +71,70 @@ const MessagesStack = () => {
 const FriendsStack = () => {
   return (
     <Stack5.Navigator>
-      <Stack5.Screen name = "FirendList" component = {FriendList} options = {{ headerShown: false }} />
-      <Stack5.Screen name = "FriendRequests" component = {FriendRequestList} options = {{ headerShown: false }} />
-      <Stack5.Screen name = "FriendProfile" component = {ProfileScreen} options = {{ headerShown: false }} />
+      <Stack5.Screen name="FirendList" component={FriendList} options={{ headerShown: false }} />
+      <Stack5.Screen name="FriendRequests" component={FriendRequestList} options={{ headerShown: false }} />
+      <Stack5.Screen name="FriendProfile" component={ProfileScreen} options={{ headerShown: false }} />
     </Stack5.Navigator>
   );
 }
 
 const ProfileStack = () => {
-  return(
+  return (
     <Stack4.Navigator>
-      <Stack4.Screen name = "EditProfile" component = {EditProfile} options = {{ headerShown: false }} />
+      <Stack4.Screen name="EditProfile" component={EditProfile} options={{ headerShown: false }} />
     </Stack4.Navigator>
   );
 }
 
-export default function App() {
+const FirstStack = () => {
   return (
-    <NavigationContainer >
-      <Stack1.Navigator>
-        <Stack1.Screen name = "Start" component = {LoginStack} options = {{ headerShown: false }} />
-        <Stack1.Screen name = "App" component = {AppTabs} options = {{ headerShown: false }} />
-      </Stack1.Navigator>
-      <StatusBar />
-    </NavigationContainer>
+    <Stack1.Navigator>
+      <Stack1.Screen name="Start" component={LoginStack} options={{ headerShown: false }} />
+      <Stack1.Screen name="App" component={AppTabs} options={{ headerShown: false }} />
+    </Stack1.Navigator>
   );
 }
 
 
-const styles = StyleSheet.create({
-  
-})
+export default function App() {
+  const [isSignedIn, setIsSignedIn] = useState(null);
+
+  useEffect(() => {
+    SecureStore
+      .getItemAsync("userSession")
+      .then(res => JSON.parse(res))
+      .then(data => data !== null ? login(data.email, data.password) : setIsSignedIn(false))
+      .catch(err => console.error(err))
+
+
+  }, [])
+
+  const login = (email, password) => {
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log("Auto logged in with:", user.email);
+        setIsSignedIn(true);
+      })
+      .catch((err) => alert(err.message));
+  }
+
+  let content = <View></View>;
+
+  if (isSignedIn) {
+    content = <AppTabs />
+  } else if (isSignedIn === false) {
+    content = <FirstStack />
+  }
+
+  return (
+    <NavigationContainer >
+      {content}
+      <StatusBar />
+    </NavigationContainer>
+  );
+
+
+}
+
