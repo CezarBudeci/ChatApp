@@ -11,22 +11,41 @@ import {
 } from "react-native";
 import { auth } from "../firebase";
 import firebase from "firebase";
+import * as SecureStore from "expo-secure-store";
+
 
 function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [psswrd, setPsswrd] = useState("");
   // const navigation = useNavigation();
+  async function save(key, value) {
+
+    const res = await SecureStore.setItemAsync(key, value);
+    console.log(res);
+
+  }
+
+
 
   const handleLogin = () => {
+
+
     // //Making the email to lowercase and removing whitespace
     // setEmail(email.toLowerCase().replace(/ /g, ""));
     //Signing in and creating a session that will only end when user signs out
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    // firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     auth
       .signInWithEmailAndPassword(email, psswrd)
       .then((userCredential) => {
         const user = userCredential.user;
         console.log("logged in with:", user.email);
+
+        save("userSession", JSON.stringify({
+          email: email,
+          password: psswrd,
+          signIn: true,
+
+        }))
 
         navigation.reset({
           index: 0,
@@ -77,7 +96,10 @@ function Login({ navigation }) {
           <Text style={styles.btnTextB}>Register</Text>
         </TouchableOpacity>
         <Text style={styles.orText}>OR</Text>
-        <TouchableOpacity style={styles.btnReg} onPress = {() => navigation.navigate('ChatroomlistAnon')}> 
+        <TouchableOpacity
+          style={styles.btnReg}
+          onPress={() => navigation.navigate("ChatroomlistAnon")}
+        >
           <Text style={styles.btnTextB}>Join a chatroom</Text>
         </TouchableOpacity>
       </View>
