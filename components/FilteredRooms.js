@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { StyleSheet, FlatList } from "react-native";
 import Room from "./Room";
 
 function FilteredRooms(props) {
   const [chatrooms, setChatrooms] = useState([]);
+  const isMountedRef = useRef(null);
   // const[filteredChat, setFilteredChat] = useState(null);
 
   // const searchFilterFunction = (text) => {
@@ -27,7 +28,11 @@ function FilteredRooms(props) {
   // }
 
   useEffect(() => {
-    fetchRooms();
+    isMountedRef.current = true;
+    if(isMountedRef.current) {
+      fetchRooms();
+    }
+    return () => isMountedRef.current = false;
   }, [chatrooms]);
 
   const fetchRooms = () => {

@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { StyleSheet, FlatList, Text, View } from "react-native";
+import { auth, firestore } from "../firebase";
 import Room from "./Room";
+import { useCollectionData } from "react-firebase-hooks/firestore";
 
 function PrivateRooms(props) {
   const [chatrooms, setChatrooms] = useState([]);
+  const[profileData,setProfileData] = useState(null);
+  const isMountedRef = useRef(null);
 
   if (chatrooms) {
     chatrooms.sort(function (a, b) {
@@ -20,7 +24,12 @@ function PrivateRooms(props) {
   }
 
   useEffect(() => {
-    fetchRooms();
+    isMountedRef.current = true;
+    if(isMountedRef.current) {
+      fetchRooms();
+    }
+
+    return () => isMountedRef.current = false;
   }, [chatrooms]);
 
   const fetchRooms = () => {
@@ -40,13 +49,17 @@ function PrivateRooms(props) {
     setChatrooms(valueKeys);
   };
 
+  useEffect(() => {
+    firestore.collection('users').doc(auth.currentUser.uid).get().then(res => setProfileData(res.data())).catch(err => console.error(err));
+  }, []);
+  
   return (
     <FlatList
       style={styles.filteredArea}
       data={chatrooms}
       keyExtractor={(item) => item.id}
       renderItem={(item) =>
-        item.item.country == "ca" ? (
+        profileData ? (item.item.country == profileData.country ? (
           <Room
             private={true}
             roomName={item.item.name}
@@ -55,7 +68,7 @@ function PrivateRooms(props) {
           />
         ) : (
           <View></View>
-        )
+        )) : <View></View>
       }
     />
   );

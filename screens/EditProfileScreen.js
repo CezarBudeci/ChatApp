@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Picker,
@@ -35,9 +35,11 @@ function EditProfileScreen({ navigation }) {
   const [numberOfFeeds, setNumberOfFeed] = useState(0);
   const [numberOfLikes, setNumberOfLikes] = useState(0);
   const [earned, setEarned] = useState(null);
+  const isMountedRef = useRef(null);
 
   // Working
   const editProfile = () => {
+    
     firebase
       .firestore()
       .collection("users")
@@ -49,8 +51,8 @@ function EditProfileScreen({ navigation }) {
         userName: username,
         userLevel: userLevel,
         // userPassword: password,
-        numberOfFeeds: 0,
-        numberOfLikes: 0,
+        // numberOfFeeds: 0,
+        // numberOfLikes: 0,
         country: country,
       })
       .then(() => {
@@ -150,8 +152,12 @@ function EditProfileScreen({ navigation }) {
   };
 
   useEffect(() => {
-    checkStatus(totalLikes);
+    isMountedRef.current = true;
+    if(isMountedRef.current) {
+      checkStatus(totalLikes);
+    }
     //  console.log(password);
+    return () => isMountedRef.current = false;
   }, [totalLikes]);
 
   const earnedCalculation = () => {

@@ -10,6 +10,7 @@ function PrivateChat(props) {
     const[message, setMessage] = useState('');
     const[messages, setMessages] = useState([]);
     const bigListRef = useRef();
+    const isMountedRef = useRef(null);
 
         
     const sendMessage = () => {
@@ -27,7 +28,11 @@ function PrivateChat(props) {
     }
 
     useEffect(() => {
-        getMessages()
+        isMountedRef.current = true;
+        if(isMountedRef.current) {
+            getMessages();
+        }
+        return () => isMountedRef.current = false;
     }, [messages]);
 
     const getMessages = () => {
