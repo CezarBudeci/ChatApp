@@ -12,14 +12,23 @@ function Feed (props){
     const[feeds, setFeeds] = useState([]);
     const[username, setUsername] = useState('');
     const[isPrivate, setIsPrivate] = useState(false);
+    const isMountedRef1 = useRef(null);
+    const isMountedRef2 = useRef(null);
 
     useEffect(() => {
-        fetchMessages();
-        
+        isMountedRef1.current = true;
+        if(isMountedRef1.current) {
+            fetchMessages();
+        }
+        return () => isMountedRef1.current = false;
     }, [feeds]);
 
     useEffect(() => {
-        auth.currentUser === null ? () => {} : getProfileData();
+        isMountedRef2.current = true;
+        if(isMountedRef2.current) {
+            auth.currentUser === null ? () => {} : getProfileData();
+        }
+        return () => isMountedRef2.current = false;
     }, [isPrivate, username, fetchedLikes])
 
     const fetchMessages = () => {

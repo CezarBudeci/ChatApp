@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import firebase from "firebase";
 import { auth,firestore } from '../firebase';
@@ -10,6 +10,7 @@ function FeedComponent(props) {
     const[likes, setLikes] = useState(props.countBtn+1);
     const[isPrivate, setIsPrivate] = useState((() => {if(props.text.name !== 'Private') {return true;} else {return false;}}));
     const[isFriend, setIsFriend] = useState(false);
+    const isMountedRef = useRef(null);
 
     const checkFriend = () => {
         auth.currentUser === null ? () => {} : firestore.collection('users').doc(auth.currentUser.uid).collection('friends').doc(props.text.id).get().then((doc) => {if(doc.exists){setIsFriend(true)} else {setIsFriend(false)}}).catch(err => console.error(err));
@@ -20,8 +21,11 @@ function FeedComponent(props) {
     
     
     useEffect(() => {
-        setLikes(props.countBtn + 1);
-        
+        isMountedRef.current = true;
+        if(isMountedRef.current) {
+            setLikes(props.countBtn + 1);
+        }
+        return () => isMountedRef.current = false;
     }, [props.countBtn]);
 
     const getLink = (id) => {
