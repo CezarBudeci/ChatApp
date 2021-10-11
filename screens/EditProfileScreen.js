@@ -14,7 +14,7 @@ import { auth, firestore } from "../firebase";
 import firebase from "firebase";
 import { updatePassword } from "firebase/auth";
 import { Button } from "react-native-paper";
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from "expo-secure-store";
 
 function EditProfileScreen() {
   const uid = auth.currentUser;
@@ -90,7 +90,9 @@ function EditProfileScreen() {
     auth
       .signOut()
       .then(() => {
-        SecureStore.deleteItemAsync('userSession').then(res => console.log('success')).catch(err => console.error(err));
+        SecureStore.deleteItemAsync("userSession")
+          .then((res) => console.log("success"))
+          .catch((err) => console.error(err));
         console.log("You are signed out! Active user:", auth.currentUser);
       })
       .catch((err) => alert(err.message));
@@ -127,14 +129,17 @@ function EditProfileScreen() {
 
     if (totalLikes >= 0 && totalLikes < 5) {
       setUserLevel("level1");
+      editProfile();
     } else if (totalLikes >= 5 && totalLikes < 10) {
       setUserLevel("level2");
+      editProfile();
     } else if (totalLikes >= 10 && totalLikes < 20) {
       setUserLevel("level3");
+      editProfile();
     }
 
     // }
-    console.log(totalLikes + " " + userLevel);
+    console.log("Likes + Level" + totalLikes + " " + userLevel);
   };
 
   useEffect(() => {
@@ -146,13 +151,17 @@ function EditProfileScreen() {
     setEarned(numberOfFeeds / numberOfLikes);
   };
   useEffect(() => {
+    earnedCalculation();
+  }, []);
+
+  useEffect(() => {
     getProfileData();
   }, []);
 
   const deleteUserAlert = () =>
     Alert.alert(
       "Delete!",
-      "Are you sure that you want to delete your account? This process cannot be undone!",
+      "Are you sure that you want to delete your account? This process cannot be undone !",
       [
         {
           text: "Cancel",
@@ -183,31 +192,22 @@ function EditProfileScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.commentLvlBox}>
-        <Text style={styles.commentText}>{userLevel}Nothing yet</Text>
+        <Text style={styles.commentText}>{userLevel}</Text>
       </View>
 
       <View style={styles.statusView}>
         <View style={styles.statusViewInner}>
-          <Text style={styles.numberStats}>{numberOfFeeds}44</Text>
+          <Text style={styles.numberStats}>{numberOfFeeds}</Text>
           <Text style={styles.textStats}>Posts</Text>
         </View>
         <View style={styles.statusViewInner}>
-          <Text style={styles.numberStats}>{numberOfLikes}5</Text>
+          <Text style={styles.numberStats}>{numberOfLikes}</Text>
           <Text style={styles.textStats}>Points</Text>
         </View>
         <View style={styles.statusViewInner}>
-          <Text style={styles.numberStats}>{earned}8</Text>
+          <Text style={styles.numberStats}>{earned}</Text>
           <Text style={styles.textStats}>Earned</Text>
         </View>
-      </View>
-
-      <View style={styles.btnField}>
-        <TouchableOpacity>
-          <Text style={styles.textBtn}>Show Friends</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.textBtn}>Settings</Text>
-        </TouchableOpacity>
       </View>
 
       <View style={styles.editInputs}>
@@ -254,16 +254,9 @@ function EditProfileScreen() {
               fontSize: 14,
               fontFamily: "Roboto",
             }}
-            onValueChange={(itemValue, itemIndex) =>
-              setCountry(itemValue)
-            }
+            onValueChange={(itemValue, itemIndex) => setCountry(itemValue)}
           >
-            <Picker.Item
-              style={styles.textview}
-              label="Country"
-              value="country"
-            />
-            <Picker.Item style={styles.textview} label="Country" value="country" />
+            <Picker.Item style={styles.textview} label="Country" value="country"/>
             <Picker.Item style={styles.textview} label="Finland" value="fi" />
             <Picker.Item style={styles.textview} label="Norway" value="nr" />
             <Picker.Item style={styles.textview} label="Slovakia" value="sk" />
@@ -271,7 +264,7 @@ function EditProfileScreen() {
             <Picker.Item style={styles.textview} label="Canada" value="ca" />
             <Picker.Item style={styles.textview} label="China" value="ch" />
             <Picker.Item style={styles.textview} label="Usa" value="us" />
-            <Picker.Item style={styles.textview} label="Great Britain" value="gb" />
+            <Picker.Item style={styles.textview} label="Great Britain" value="gb"/>
             <Picker.Item style={styles.textview} label="Sweden" value="sw" />
             <Picker.Item style={styles.textview} label="Moldava" value="ml" />
           </Picker>
@@ -301,8 +294,6 @@ function EditProfileScreen() {
               styles.textBtn,
               {
                 color: "red",
-                borderWidth: 1,
-                borderColor: "black",
                 width: "40%",
               },
             ]}
@@ -317,8 +308,7 @@ function EditProfileScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    height: "100%",
-    width: "100%",
+    flex: 1,
     paddingTop: 64,
     paddingBottom: 32,
     paddingLeft: 32,
@@ -444,15 +434,15 @@ const styles = StyleSheet.create({
     paddingTop: 32,
   },
   pickerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    color: "#ACACAC"
+    flexDirection: "row",
+    justifyContent: "space-between",
+    color: "#ACACAC",
   },
   textview: {
-    fontFamily: 'Roboto',
+    fontFamily: "Roboto",
     fontSize: 14,
-    fontWeight: 'normal',
-    color: "#ACACAC"
+    fontWeight: "normal",
+    color: "#ACACAC",
   },
 });
 
