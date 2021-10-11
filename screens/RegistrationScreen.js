@@ -31,13 +31,13 @@ function Registration({ navigation }) {
   const [allUserNames, setAllUserNames] = useState([]);
 
   // db = firestore?
-  const someRef = firestore.collection('users');
-  const query = someRef.where('userName', '==', userName);
-  const [arr] = useCollectionData(query, { idField: 'id' });
+  const ref = firestore.collection('users');
+  const query = ref.where('userName', '==', userName);
+  const [userNamArr] = useCollectionData(query, { idField: 'id' });
 
 
   const handleRegistration = () => {
-    if (arr.length === 0) {
+    if (userNamArr.length === 0) {
       if (psswrd === confirmPsswrd) {
         auth
           .createUserWithEmailAndPassword(email, psswrd)

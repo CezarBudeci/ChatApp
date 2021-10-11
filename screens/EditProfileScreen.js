@@ -16,7 +16,8 @@ import { updatePassword } from "firebase/auth";
 import { Button } from "react-native-paper";
 import * as SecureStore from 'expo-secure-store';
 
-function EditProfileScreen() {
+
+function EditProfileScreen({ navigation }) {
   const uid = auth.currentUser;
   const user = firebase.auth().currentUser;
   const currentUserID = uid.uid;
@@ -85,6 +86,14 @@ function EditProfileScreen() {
       });
   };
 
+  const navigatingOut = () => {
+    navigation.replace("Start");
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Start" }],
+    });
+  }
+
   //Working
   const signOut = () => {
     auth
@@ -92,8 +101,11 @@ function EditProfileScreen() {
       .then(() => {
         SecureStore.deleteItemAsync('userSession').then(res => console.log('success')).catch(err => console.error(err));
         console.log("You are signed out! Active user:", auth.currentUser);
+
       })
       .catch((err) => alert(err.message));
+
+    navigatingOut();
   };
   //Working
   const deleteUser = () => {
