@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Picker,
@@ -16,7 +16,8 @@ import { updatePassword } from "firebase/auth";
 import { Button } from "react-native-paper";
 import * as SecureStore from "expo-secure-store";
 
-function EditProfileScreen() {
+
+function EditProfileScreen({ navigation }) {
   const uid = auth.currentUser;
   const user = firebase.auth().currentUser;
   const currentUserID = uid.uid;
@@ -34,9 +35,11 @@ function EditProfileScreen() {
   const [numberOfFeeds, setNumberOfFeed] = useState(0);
   const [numberOfLikes, setNumberOfLikes] = useState(0);
   const [earned, setEarned] = useState(null);
+  const isMountedRef = useRef(null);
 
   // Working
   const editProfile = () => {
+    
     firebase
       .firestore()
       .collection("users")
@@ -48,8 +51,8 @@ function EditProfileScreen() {
         userName: username,
         userLevel: userLevel,
         // userPassword: password,
-        numberOfFeeds: 0,
-        numberOfLikes: 0,
+        // numberOfFeeds: 0,
+        // numberOfLikes: 0,
         country: country,
       })
       .then(() => {
@@ -85,6 +88,14 @@ function EditProfileScreen() {
       });
   };
 
+  const navigatingOut = () => {
+    navigation.replace("Start");
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Start" }],
+    });
+  }
+
   //Working
   const signOut = () => {
     auth
@@ -94,8 +105,11 @@ function EditProfileScreen() {
           .then((res) => console.log("success"))
           .catch((err) => console.error(err));
         console.log("You are signed out! Active user:", auth.currentUser);
+
       })
       .catch((err) => alert(err.message));
+
+    navigatingOut();
   };
   //Working
   const deleteUser = () => {
@@ -143,8 +157,12 @@ function EditProfileScreen() {
   };
 
   useEffect(() => {
-    checkStatus(totalLikes);
+    isMountedRef.current = true;
+    if(isMountedRef.current) {
+      checkStatus(totalLikes);
+    }
     //  console.log(password);
+    return () => isMountedRef.current = false;
   }, [totalLikes]);
 
   const earnedCalculation = () => {
