@@ -38,6 +38,7 @@ function EditProfileScreen({ navigation }) {
   const [numberOfFeeds, setNumberOfFeed] = useState(0);
   const [numberOfLikes, setNumberOfLikes] = useState(0);
   const [earned, setEarned] = useState(0);
+  //const isMountedRef = useRef(false);
 
   // Check if screen is clicked again
   let count = 0;
@@ -79,7 +80,7 @@ function EditProfileScreen({ navigation }) {
       });
   };
 
-  /* Getting data for selected user from the db - only once
+  //Getting data for selected user from the db - only once
   const getProfileData = () => {
     firebase
       .firestore()
@@ -100,10 +101,10 @@ function EditProfileScreen({ navigation }) {
           setCountry(documentSnapshot.get("country"));
         }
       });
-  }; */
+  };
   
   // Getting data for selected user from the db - listening permanently
-  function getProfileData() {
+  /* function getProfileData() {
     useEffect(() => {
       const subscriber = firebase.firestore()
         .collection('users')
@@ -123,7 +124,7 @@ function EditProfileScreen({ navigation }) {
       // Stop listening for updates when no longer required
       return () => subscriber();
     });
-  }
+  } */
 
 
   // When sign out or delete user, this will bring user back in the start screen
@@ -167,7 +168,7 @@ function EditProfileScreen({ navigation }) {
   };
 
   // Level selection based on likes
-  const checkStatus = (numberOfLikes) => {
+  const checkStatus = () => {
     if (numberOfLikes >= 0 && numberOfLikes < 5) {
       setUserLevel("Beginner!");
     } else if (numberOfLikes >= 5 && numberOfLikes < 10) {
@@ -182,30 +183,32 @@ function EditProfileScreen({ navigation }) {
   console.log(count);
 
   // Everytime we open the screen, we will update the data
-  while (count == 0) {
-    useEffect(() => {
-      console.log("The screen is visible");
-      checkStatus(numberOfLikes);
-      //getProfileData();
-      setEarned((Number(numberOfLikes) / Number(numberOfFeeds)).toFixed(2));
-      //levelUpdate(userLevel);
-    });
-    count = 1;
-  }
-  getProfileData();
-  console.log(count);
-
-  // useEffect(() => {
-  //   isMountedRef.current = true;
-  //   if (isMountedRef.current) {
-  //     checkStatus(numberOfLikes);
-  //     getProfileData();
-  //     setEarned((Number(numberOfFeeds) / Number(numberOfLikes)).toFixed(2));
-  //     levelUpdate(userLevel);
-  //   }
-  //   //  console.log(password);
-  //   return () => (isMountedRef.current = false);
-  // }, [numberOfLikes,userLevel,earned]);
+ 
+  useEffect(() => {
+    console.log("The screen is visible");
+    
+    getProfileData();
+    checkStatus();
+    setEarned((Number(numberOfLikes) / Number(numberOfFeeds)).toFixed(2));
+    levelUpdate();
+  },[]);
+  //getProfileData();
+  
+//   while (count == 0) {
+//   useEffect(() => {
+//     isMountedRef.current = true;
+//     if (isMountedRef.current) {
+//       checkStatus(numberOfLikes);
+//       getProfileData();
+//       setEarned((Number(numberOfFeeds) / Number(numberOfLikes)).toFixed(2));
+//       //levelUpdate(userLevel);
+//     }
+//     //  console.log(password);
+//     return () => (isMountedRef.current = false);
+//   }, [numberOfLikes,userLevel,earned]);
+//   count = 1;
+//   console.log(count);
+// }
 
   // Delete user alert dialog
   const deleteUserAlert = () =>

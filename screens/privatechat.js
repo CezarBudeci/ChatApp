@@ -40,7 +40,7 @@ function PrivateChat(props) {
     if (isMountedRef.current) {
       getMessages();
     }
-    return () => (isMountedRef.current = false);
+    return () => isMountedRef.current = false;
   }, [messages]);
 
   const getMessages = () => {
