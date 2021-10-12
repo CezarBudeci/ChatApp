@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { auth, firestore } from "../firebase";
@@ -26,7 +26,10 @@ function FriendRequestList(props) {
                 }
             });
     };
-    getUsername();
+    useEffect(() => {
+        getUsername();
+    }, []);
+    
 
 
     const declineRequest = (id) => {

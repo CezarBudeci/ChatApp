@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import firebase from "firebase";
 import { auth } from '../firebase';
@@ -42,9 +42,11 @@ function ProfileScreen(props) {
     });
   }
 
-
-  getProfileData();
-  setCurrent();
+  useEffect(() => {
+    getProfileData();
+    setCurrent();
+  }, []);
+  
 
   const sendFriendRequest = () => {
     firebase.firestore().collection('users').doc(props.route.params.uid).collection('friendRequests').add({uid: auth.currentUser.uid, name: currentName});
