@@ -108,20 +108,6 @@ function Feed(props) {
     }
          
 
-
-  const updateLikes = () => {
-    setFetchedLikes(fetchedLikes + 1);
-    auth.currentUser === null
-      ? () => {}
-      : firebase
-          .firestore()
-          .collection("users")
-          .doc(uid.uid)
-          .update({ numberOfLikes: fetchedLikes })
-          .then(() => {})
-          .catch((err) => console.error(err));
-  };
-
   const sendMessage = () => {
     if (message) {
       auth.currentUser === null ? () => {} : setFeedNr(feedNr + 1);
