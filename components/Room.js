@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { auth } from '../firebase';
 
+// Component used in privaterooms.js
 function Room(props) {
   const openChatroom = () => {
     props.navigation.navigate(auth.currentUser === null ? "ChatroomAnon" : "Chatroom", {

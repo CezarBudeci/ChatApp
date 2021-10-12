@@ -5,16 +5,12 @@ import {
   View,
   Text,
   SafeAreaView,
-  ScrollView,
   TouchableOpacity,
   TextInput,
   FlatList,
-  KeyboardAvoidingView,
 } from "react-native";
 import ChatMessage from "../components/chatmessage";
 import { auth } from "../firebase";
-import BigList from "react-native-big-list";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 function PrivateChat(props) {
   const [message, setMessage] = useState("");

@@ -10,9 +10,6 @@ function ChatRoomSelection({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.texttitle}>Chat rooms</Text>
-      {/* <View style = {styles.viewTop}>
-                <TextInput style = {styles.input} placeholder = "Search for a room" onChangeText = {text => setSearchCrit(text)} />
-            </View> */}
       <View style={styles.roomsArea}>
         <Text style={styles.roomtypestext}>Public rooms</Text>
         <FilteredRooms navigation={navigation} searchText={searchCrit} />
@@ -30,7 +27,8 @@ function ChatRoomSelection({ navigation }) {
     
   );
 }
-// Button must be still better centered (to be the same as profile btn)
+
+
 const styles = StyleSheet.create({
   container: {
     height: "100%",
