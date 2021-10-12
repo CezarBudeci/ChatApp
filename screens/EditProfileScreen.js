@@ -166,9 +166,6 @@ function EditProfileScreen({ navigation }) {
     console.log("Likes + Level" + numberOfLikes + " " + userLevel);
   };
 
-  useEffect(() => {
-    levelUpdate();
-  }, []);
 
   // useEffect(() => {
   //   isMountedRef1.current = true;
@@ -183,11 +180,13 @@ function EditProfileScreen({ navigation }) {
     if (isMountedRef.current) {
       checkStatus(numberOfLikes);
       getProfileData();
-      earnedCalculation();
+      setEarned((Number(numberOfFeeds) / Number(numberOfLikes)).toFixed(2));
+      levelUpdate(userLevel);
+
     }
     //  console.log(password);
     return () => (isMountedRef.current = false);
-  }, [numberOfLikes]);
+  }, [numberOfLikes,userLevel,earned]);
 
   const earnedCalculation = () => {
     setEarned((Number(numberOfFeeds) / Number(numberOfLikes)).toFixed(2));
@@ -229,7 +228,7 @@ function EditProfileScreen({ navigation }) {
           <Text style={styles.textStats}>Points</Text>
         </View>
         <View style={styles.statusViewInner}>
-          <Text maxLength = {3} style={styles.numberStats}>{earned}</Text>
+          <Text maxLength = {3} style={styles.numberStats}>{earned==="NaN" ? 0 : earned}</Text>
           <Text style={styles.textStats}>Earned</Text>
         </View>
       </View>
