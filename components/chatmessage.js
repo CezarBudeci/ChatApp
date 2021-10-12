@@ -6,17 +6,21 @@ function ChatMessage(props) {
 
     return(
         <View style = {styles.container}>
+            <View>
             <Text style = {[styles.textmessage, {alignSelf: props.position}]}>{props.text}</Text>
+            </View>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        height: "auto",
         width: '100%',
+        marginBottom: 4
     },
     textmessage: {
+        height: "auto",
         maxWidth: '50%',
         borderWidth: 1,
         borderColor: '#344955',
@@ -27,7 +31,6 @@ const styles = StyleSheet.create({
         paddingTop: 16,
         paddingLeft: 8,
         paddingRight: 8,
-        marginBottom: 8,
         fontSize: 14,
     }
 });
