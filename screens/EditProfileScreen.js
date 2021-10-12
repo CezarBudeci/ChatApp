@@ -40,6 +40,7 @@ function EditProfileScreen({ navigation }) {
 
   // Working
   const editProfile = () => {
+
     firebase
       .firestore()
       .collection("users")
@@ -120,10 +121,12 @@ function EditProfileScreen({ navigation }) {
           .then((res) => console.log("success"))
           .catch((err) => console.error(err));
         console.log("You are signed out! Active user:", auth.currentUser);
+        navigatingOut();
+
       })
       .catch((err) => alert(err.message));
 
-    navigatingOut();
+
   };
   //Working
   const deleteUser = () => {
@@ -182,6 +185,7 @@ function EditProfileScreen({ navigation }) {
     isMountedRef.current = true;
     if (isMountedRef.current) {
       checkStatus(numberOfLikes);
+
     }
     //  console.log(password);
     return () => (isMountedRef.current = false);
@@ -292,11 +296,13 @@ function EditProfileScreen({ navigation }) {
             }}
             onValueChange={(itemValue, itemIndex) => setCountry(itemValue)}
           >
+
             <Picker.Item
               style={styles.textview}
               label="Country"
               value="country"
             />
+
             <Picker.Item style={styles.textview} label="Finland" value="fi" />
             <Picker.Item style={styles.textview} label="Norway" value="nr" />
             <Picker.Item style={styles.textview} label="Slovakia" value="sk" />
@@ -304,11 +310,13 @@ function EditProfileScreen({ navigation }) {
             <Picker.Item style={styles.textview} label="Canada" value="ca" />
             <Picker.Item style={styles.textview} label="China" value="ch" />
             <Picker.Item style={styles.textview} label="Usa" value="us" />
+
             <Picker.Item
               style={styles.textview}
               label="Great Britain"
               value="gb"
             />
+
             <Picker.Item style={styles.textview} label="Sweden" value="sw" />
             <Picker.Item style={styles.textview} label="Moldava" value="ml" />
           </Picker>
