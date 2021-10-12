@@ -15,19 +15,20 @@ import firebase from "firebase";
 import { updatePassword } from "firebase/auth";
 import { Button } from "react-native-paper";
 import * as SecureStore from "expo-secure-store";
-
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 function EditProfileScreen({ navigation }) {
   const uid = auth.currentUser;
   const user = firebase.auth().currentUser;
   const currentUserID = uid.uid;
   const currentUserEmail = uid.email;
-  const [totalLikes, setTotalLikes] = useState(0);
 
   const [isPrivate, setPrivate] = useState(false);
   const toggleSwitch = () => setPrivate((previousState) => !previousState);
 
-  const [username, setUsername] = useState(isPrivate ? "" : "Private!");
+  const [username, setUsername] = useState(
+    !isPrivate ? "" + username : "Private!"
+  );
   const [email, setEmail] = useState(currentUserEmail);
   const [password, setPassword] = useState("");
   const [country, setCountry] = useState("");
@@ -67,6 +68,19 @@ function EditProfileScreen({ navigation }) {
     }
   };
 
+  const levelUpdate = () => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(currentUserID)
+      .update({
+        userLevel: userLevel,
+      })
+      .then(() => {
+        console.log("Level updated!");
+      });
+  };
+
   // Working
   const getProfileData = () => {
     firebase
@@ -82,6 +96,8 @@ function EditProfileScreen({ navigation }) {
           setUsername(documentSnapshot.get("userName"));
           setEmail(documentSnapshot.get("userEmail"));
           setPassword(documentSnapshot.get("userPassword"));
+          setNumberOfLikes(documentSnapshot.get("numberOfLikes"));
+          setNumberOfFeed(documentSnapshot.get("numberOfFeeds"));
           setUserLevel(documentSnapshot.get("userLevel"));
           setCountry(documentSnapshot.get("country"));
         }
@@ -94,7 +110,7 @@ function EditProfileScreen({ navigation }) {
       index: 0,
       routes: [{ name: "Start" }],
     });
-  }
+  };
 
   //Working
   const signOut = () => {
@@ -106,6 +122,7 @@ function EditProfileScreen({ navigation }) {
           .catch((err) => console.error(err));
         console.log("You are signed out! Active user:", auth.currentUser);
         navigatingOut();
+
       })
       .catch((err) => alert(err.message));
 
@@ -125,7 +142,7 @@ function EditProfileScreen({ navigation }) {
   };
 
   //Infinite loop?
-  const checkStatus = (totalLikes) => {
+  const checkStatus = (numberOfLikes) => {
     // switch (totalLikes) {
     //   case totalLikes > 0 && totalLikes < 5:
     //     setUserLevel("Welcome user!");
@@ -141,39 +158,44 @@ function EditProfileScreen({ navigation }) {
     //     break;
     //   default:
 
-    if (totalLikes >= 0 && totalLikes < 5) {
+    if (numberOfLikes >= 0 && numberOfLikes < 5) {
       setUserLevel("level1");
-      editProfile();
-    } else if (totalLikes >= 5 && totalLikes < 10) {
+      //editProfile();
+    } else if (numberOfLikes >= 5 && numberOfLikes < 10) {
       setUserLevel("level2");
-      editProfile();
-    } else if (totalLikes >= 10 && totalLikes < 20) {
+      //editProfile();
+    } else if (numberOfLikes >= 10 && numberOfLikes < 20) {
       setUserLevel("level3");
-      editProfile();
+      //editProfile();
     }
 
     // }
-    console.log("Likes + Level" + totalLikes + " " + userLevel);
+    console.log("Likes + Level" + numberOfLikes + " " + userLevel);
   };
+
+  useEffect(() => {
+    levelUpdate();
+  }, []);
+
+  useEffect(() => {
+    getProfileData();
+  }, []);
 
   useEffect(() => {
     isMountedRef.current = true;
     if (isMountedRef.current) {
-      checkStatus(totalLikes);
+      checkStatus(numberOfLikes);
+
     }
     //  console.log(password);
-    return () => isMountedRef.current = false;
-  }, [totalLikes]);
+    return () => (isMountedRef.current = false);
+  }, [numberOfLikes]);
 
   const earnedCalculation = () => {
     setEarned(numberOfFeeds / numberOfLikes);
   };
   useEffect(() => {
     earnedCalculation();
-  }, []);
-
-  useEffect(() => {
-    getProfileData();
   }, []);
 
   const deleteUserAlert = () =>
@@ -189,7 +211,7 @@ function EditProfileScreen({ navigation }) {
         {
           text: "DELETE",
           onPress: () => {
-            deleteUser;
+            deleteUser();
           },
         },
       ],
@@ -231,7 +253,7 @@ function EditProfileScreen({ navigation }) {
       <View style={styles.editInputs}>
         <TextInput
           style={styles.inputsFields}
-          placeholder="Profile69"
+          placeholder={username}
           onChangeText={(text) => setUsername(text)}
           editable={!isPrivate}
           maxLength={25}
@@ -264,7 +286,7 @@ function EditProfileScreen({ navigation }) {
         <View style={styles.pickerContainer}>
           <Text style={styles.textview}></Text>
           <Picker
-            country={country}
+            selectedValue={country}
             style={{
               color: "#ACACAC",
               height: "auto",
@@ -274,7 +296,13 @@ function EditProfileScreen({ navigation }) {
             }}
             onValueChange={(itemValue, itemIndex) => setCountry(itemValue)}
           >
-            <Picker.Item style={styles.textview} label="Country" value="country" />
+
+            <Picker.Item
+              style={styles.textview}
+              label="Country"
+              value="country"
+            />
+
             <Picker.Item style={styles.textview} label="Finland" value="fi" />
             <Picker.Item style={styles.textview} label="Norway" value="nr" />
             <Picker.Item style={styles.textview} label="Slovakia" value="sk" />
@@ -282,7 +310,13 @@ function EditProfileScreen({ navigation }) {
             <Picker.Item style={styles.textview} label="Canada" value="ca" />
             <Picker.Item style={styles.textview} label="China" value="ch" />
             <Picker.Item style={styles.textview} label="Usa" value="us" />
-            <Picker.Item style={styles.textview} label="Great Britain" value="gb" />
+
+            <Picker.Item
+              style={styles.textview}
+              label="Great Britain"
+              value="gb"
+            />
+
             <Picker.Item style={styles.textview} label="Sweden" value="sw" />
             <Picker.Item style={styles.textview} label="Moldava" value="ml" />
           </Picker>
@@ -307,17 +341,23 @@ function EditProfileScreen({ navigation }) {
       </TouchableOpacity> */}
       <View style={styles.deleteView}>
         <TouchableOpacity onPress={deleteUserAlert}>
-          <Text
-            style={[
-              styles.textBtn,
-              {
-                color: "red",
-                width: "40%",
-              },
-            ]}
-          >
-            Delete acount
-          </Text>
+          <View style={styles.deleteBtn}>
+            <MaterialCommunityIcons
+              name="delete-forever"
+              size={36}
+              color="#B31412"
+            />
+            <Text
+              style={[
+                styles.textBtn,
+                {
+                  color: "#B31412",
+                },
+              ]}
+            >
+              Delete acount
+            </Text>
+          </View>
         </TouchableOpacity>
       </View>
     </View>
@@ -450,6 +490,12 @@ const styles = StyleSheet.create({
   },
   deleteView: {
     paddingTop: 32,
+    flexDirection: "column",
+    alignSelf: "flex-start",
+  },
+  deleteBtn: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   pickerContainer: {
     flexDirection: "row",
