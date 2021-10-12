@@ -16,7 +16,10 @@ function FeedComponent(props) {
         auth.currentUser === null ? () => {} : firestore.collection('users').doc(auth.currentUser.uid).collection('friends').doc(props.text.id).get().then((doc) => {if(doc.exists){setIsFriend(true)} else {setIsFriend(false)}}).catch(err => console.error(err));
     }
 
-    checkFriend();
+    useEffect(() => {
+        checkFriend();
+    }, [])
+    
 
     
     
