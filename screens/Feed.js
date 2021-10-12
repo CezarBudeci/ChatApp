@@ -89,12 +89,12 @@ function Feed (props){
     }
 
     const updateFeeds = () => {
-        auth.currentUser === null ? () => {} :firebase.firestore().collection('users').doc(uid.uid).update({"numberOfFeeds": feedNr}).then(() => {}).catch(err => console.error(err));
+        auth.currentUser === null ? () => {} :firebase.firestore().collection('users').doc(uid.uid).update({"numberOfFeeds": feedNr + 1}).then(() => {}).catch(err => console.error(err));
     }
 
     const updateLikes = () => {
         setFetchedLikes(fetchedLikes + 1);
-        auth.currentUser === null ? () => {} : firebase.firestore().collection('users').doc(uid.uid).update({"numberOfLikes": fetchedLikes}).then(() => {}).catch(err => console.error(err));
+        auth.currentUser === null ? () => {} : firebase.firestore().collection('users').doc(uid.uid).update({"numberOfLikes": fetchedLikes + 1}).then(() => {}).catch(err => console.error(err));
     }
          
 
