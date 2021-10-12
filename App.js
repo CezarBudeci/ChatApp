@@ -18,6 +18,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import FriendRequestList from './screens/friendrequests';
 import { auth } from './firebase';
 import * as SecureStore from "expo-secure-store";
+import { CommonActions } from '@react-navigation/routers';
 
 
 const Stack = createStackNavigator();
@@ -28,7 +29,37 @@ const Stack4 = createStackNavigator();
 const Stack5 = createStackNavigator();
 const BottomTabs = createMaterialBottomTabNavigator();
 
-const LoginStack = () => {
+const LoginStack = ({ navigation }) => {
+  const [isSignedIn, setIsSignedIn] = useState(null);
+
+  useEffect(() => {
+    SecureStore
+      .getItemAsync("userSession")
+      .then(res => JSON.parse(res))
+      .then(data => data !== null ? login(data.email, data.password) : setIsSignedIn(false))
+      .catch(err => console.error(err))
+
+    if (isSignedIn) {
+    }
+  }, [])
+
+  const login = (email, password) => {
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log("Auto logged in with:", user.email);
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'App' }]
+          })
+        );
+      })
+      .catch((err) => alert(err.message));
+  }
+
+
   return (
     <Stack.Navigator>
       <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
@@ -87,6 +118,9 @@ const ProfileStack = () => {
 }
 
 const FirstStack = () => {
+
+
+
   return (
     <Stack1.Navigator>
       <Stack1.Screen name="Start" component={LoginStack} options={{ headerShown: false }} />
@@ -96,41 +130,11 @@ const FirstStack = () => {
 }
 
 
-export default function App() {
-  const [isSignedIn, setIsSignedIn] = useState(null);
-
-  useEffect(() => {
-    SecureStore
-      .getItemAsync("userSession")
-      .then(res => JSON.parse(res))
-      .then(data => data !== null ? login(data.email, data.password) : setIsSignedIn(false))
-      .catch(err => console.error(err))
-
-
-  }, [])
-
-  const login = (email, password) => {
-    auth
-      .signInWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log("Auto logged in with:", user.email);
-        setIsSignedIn(true);
-      })
-      .catch((err) => alert(err.message));
-  }
-
-  let content = <View></View>;
-
-  if (isSignedIn) {
-    content = <AppTabs />
-  } else if (isSignedIn === false) {
-    content = <FirstStack />
-  }
+export default function App({ navigation }) {
 
   return (
     <NavigationContainer >
-      {content}
+      <FirstStack />
       <StatusBar />
     </NavigationContainer>
   );
