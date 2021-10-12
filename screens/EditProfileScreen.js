@@ -79,7 +79,7 @@ function EditProfileScreen({ navigation }) {
       });
   };
 
-  // Getting data for selected user from the db
+  /* Getting data for selected user from the db - only once
   const getProfileData = () => {
     firebase
       .firestore()
@@ -100,7 +100,31 @@ function EditProfileScreen({ navigation }) {
           setCountry(documentSnapshot.get("country"));
         }
       });
-  };
+  }; */
+  
+  // Getting data for selected user from the db - listening permanently
+  function getProfileData() {
+    useEffect(() => {
+      const subscriber = firebase.firestore()
+        .collection('users')
+        .doc(currentUserID)
+        .onSnapshot(documentSnapshot => {
+          console.log("User data: ", documentSnapshot.data());
+          setPrivate(!documentSnapshot.get("privateUser"));
+          setUsername(documentSnapshot.get("userName"));
+          setEmail(documentSnapshot.get("userEmail"));
+          setPassword(documentSnapshot.get("userPassword"));
+          setNumberOfLikes(documentSnapshot.get("numberOfLikes"));
+          setNumberOfFeed(documentSnapshot.get("numberOfFeeds"));
+          setUserLevel(documentSnapshot.get("userLevel"));
+          setCountry(documentSnapshot.get("country"));
+        });
+  
+      // Stop listening for updates when no longer required
+      return () => subscriber();
+    });
+  }
+
 
   // When sign out or delete user, this will bring user back in the start screen
   const navigatingOut = () => {
@@ -155,18 +179,21 @@ function EditProfileScreen({ navigation }) {
     }
     console.log("Likes + Level" + numberOfLikes + " " + userLevel);
   };
+  console.log(count);
 
   // Everytime we open the screen, we will update the data
   while (count == 0) {
     useEffect(() => {
       console.log("The screen is visible");
       checkStatus(numberOfLikes);
-      getProfileData();
+      //getProfileData();
       setEarned((Number(numberOfLikes) / Number(numberOfFeeds)).toFixed(2));
-      levelUpdate(userLevel);
+      //levelUpdate(userLevel);
     });
     count = 1;
   }
+  getProfileData();
+  console.log(count);
 
   // useEffect(() => {
   //   isMountedRef.current = true;
