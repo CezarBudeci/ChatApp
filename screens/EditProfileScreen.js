@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Picker,
+  ScrollView,
   StyleSheet,
   Switch,
   Text,
@@ -35,8 +36,9 @@ function EditProfileScreen({ navigation }) {
   const [userLevel, setUserLevel] = useState("");
   const [numberOfFeeds, setNumberOfFeed] = useState(0);
   const [numberOfLikes, setNumberOfLikes] = useState(0);
-  const [earned, setEarned] = useState(null);
+  const [earned, setEarned] = useState(0);
   const isMountedRef = useRef(null);
+  const isMountedRef1 = useRef(null);
 
   // Working
   const editProfile = () => {
@@ -49,7 +51,7 @@ function EditProfileScreen({ navigation }) {
         userEmail: email,
         // userID: currentUserID,
         userName: username,
-        userLevel: userLevel,
+        //userLevel: userLevel,
         // userPassword: password,
         // numberOfFeeds: 0,
         // numberOfLikes: 0,
@@ -119,18 +121,23 @@ function EditProfileScreen({ navigation }) {
         SecureStore.deleteItemAsync("userSession")
           .then((res) => console.log("success"))
           .catch((err) => console.error(err));
+          navigatingOut();
         console.log("You are signed out! Active user:", auth.currentUser);
       })
       .catch((err) => alert(err.message));
 
-    navigatingOut();
+    //navigatingOut();
   };
   //Working
   const deleteUser = () => {
     user
       .delete()
       .then(function () {
+        SecureStore.deleteItemAsync("userSession")
+          .then((res) => console.log("success"))
+          .catch((err) => console.error(err));
         console.log("User account was deleted!:", auth.currentUser);
+        navigatingOut();
       })
       .catch(function (error) {
         // An error happened.
@@ -138,35 +145,24 @@ function EditProfileScreen({ navigation }) {
       });
   };
 
-  //Infinite loop?
-  const checkStatus = (numberOfLikes) => {
-    // switch (totalLikes) {
-    //   case totalLikes > 0 && totalLikes < 5:
-    //     setUserLevel("Welcome user!");
-    //     break;
-    //   case totalLikes > 5 && totalLikes < 11:
-    //     setUserLevel("This is just beginning, keep going!");
-    //     break;
-    //   case totalLikes > 10 && totalLikes < 16:
-    //     setUserLevel("Are you start to like it?");
-    //     break;
-    //   case totalLikes > 15 && totalLikes < 21:
-    //     setUserLevel("Comment forewer!");
-    //     break;
-    //   default:
 
+  const checkStatus = (numberOfLikes) => {
     if (numberOfLikes >= 0 && numberOfLikes < 5) {
       setUserLevel("level1");
       //editProfile();
+      levelUpdate();
+      getProfileData();
     } else if (numberOfLikes >= 5 && numberOfLikes < 10) {
       setUserLevel("level2");
       //editProfile();
+      levelUpdate();
+      getProfileData();
     } else if (numberOfLikes >= 10 && numberOfLikes < 20) {
       setUserLevel("level3");
       //editProfile();
+      levelUpdate();
+      getProfileData();
     }
-
-    // }
     console.log("Likes + Level" + numberOfLikes + " " + userLevel);
   };
 
@@ -174,25 +170,28 @@ function EditProfileScreen({ navigation }) {
     levelUpdate();
   }, []);
 
-  useEffect(() => {
-    getProfileData();
-  }, []);
+  // useEffect(() => {
+  //   isMountedRef1.current = true;
+  //   if (isMountedRef1.current) {
+      
+  //   }
+  //   return () => isMountedRef1.current = false;
+  // }, [numberOfFeeds, numberOfLikes]);
 
   useEffect(() => {
     isMountedRef.current = true;
     if (isMountedRef.current) {
       checkStatus(numberOfLikes);
+      getProfileData();
+      earnedCalculation();
     }
     //  console.log(password);
     return () => (isMountedRef.current = false);
   }, [numberOfLikes]);
 
   const earnedCalculation = () => {
-    setEarned(numberOfFeeds / numberOfLikes);
+    setEarned((Number(numberOfFeeds) / Number(numberOfLikes)).toFixed(2));
   };
-  useEffect(() => {
-    earnedCalculation();
-  }, []);
 
   const deleteUserAlert = () =>
     Alert.alert(
@@ -214,17 +213,6 @@ function EditProfileScreen({ navigation }) {
       { cancelable: false }
     );
 
-  // function randomUsername() {
-  //   let text = "";
-  //   let possible =
-  //     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-  //   for (let i = 0; i < 10; i++)
-  //     text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-  //   return "Random" + text;
-  // }
-
   return (
     <View style={styles.container}>
       <View style={styles.commentLvlBox}>
@@ -241,7 +229,7 @@ function EditProfileScreen({ navigation }) {
           <Text style={styles.textStats}>Points</Text>
         </View>
         <View style={styles.statusViewInner}>
-          <Text style={styles.numberStats}>{earned}</Text>
+          <Text maxLength = {3} style={styles.numberStats}>{earned}</Text>
           <Text style={styles.textStats}>Earned</Text>
         </View>
       </View>
@@ -352,7 +340,7 @@ function EditProfileScreen({ navigation }) {
           </View>
         </TouchableOpacity>
       </View>
-    </View>
+      </View>
   );
 }
 
@@ -365,6 +353,8 @@ const styles = StyleSheet.create({
     paddingRight: 32,
     textAlign: "center",
     alignContent: "center",
+    borderWidth: 1,
+    borderColor: "black"
   },
 
   commentLvlBox: {
@@ -454,7 +444,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: 36,
     backgroundColor: "#344955",
-    opacity: 100,
     borderRadius: 4,
   },
   btnLogOut: {
@@ -463,8 +452,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: 36,
-    backgroundColor: "#344955",
-    opacity: 0.3,
+    backgroundColor: 'rgba(52, 73, 85, 0.3)',
     borderRadius: 4,
     borderColor: "black",
     borderWidth: 1,
