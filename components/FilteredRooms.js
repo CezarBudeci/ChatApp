@@ -2,30 +2,10 @@ import React, { useEffect, useState, useRef } from "react";
 import { StyleSheet, FlatList } from "react-native";
 import Room from "./Room";
 
+// Component used in ChatRoomSelection
 function FilteredRooms(props) {
   const [chatrooms, setChatrooms] = useState([]);
   const isMountedRef = useRef(null);
-  // const[filteredChat, setFilteredChat] = useState(null);
-
-  // const searchFilterFunction = (text) => {
-
-  //     if (text) {
-
-  //       const newData = chatrooms.filter(function (item) {
-  //         const itemData = item.name
-  //           ? item.name.toUpperCase()
-  //           : ''.toUpperCase();
-  //         const textData = text.toUpperCase();
-  //         return itemData.indexOf(textData) > -1;
-  //       });
-  //       setFilteredChat(newData);
-
-  //     }
-  // };
-
-  // if(props.searchText) {
-  //     searchFilterFunction(props.searchText);
-  // }
 
   useEffect(() => {
     isMountedRef.current = true;

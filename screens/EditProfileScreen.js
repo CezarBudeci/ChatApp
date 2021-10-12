@@ -25,6 +25,7 @@ function EditProfileScreen({ navigation }) {
   const currentUserEmail = uid.email;
 
   const [isPrivate, setPrivate] = useState(false);
+  // Variable for button switch
   const toggleSwitch = () => setPrivate((previousState) => !previousState);
 
   const [username, setUsername] = useState(
@@ -37,12 +38,12 @@ function EditProfileScreen({ navigation }) {
   const [numberOfFeeds, setNumberOfFeed] = useState(0);
   const [numberOfLikes, setNumberOfLikes] = useState(0);
   const [earned, setEarned] = useState(0);
-  const isMountedRef = useRef(null);
-  const isMountedRef1 = useRef(null);
 
-  // Working
+  // Check if screen is clicked again
+  let count = 0;
+
+  // Edit profile function - update values in the db - executed after btn click
   const editProfile = () => {
-
     firebase
       .firestore()
       .collection("users")
@@ -50,12 +51,7 @@ function EditProfileScreen({ navigation }) {
       .update({
         privateUser: !isPrivate,
         userEmail: email,
-        // userID: currentUserID,
         userName: username,
-        //userLevel: userLevel,
-        // userPassword: password,
-        // numberOfFeeds: 0,
-        // numberOfLikes: 0,
         country: country,
       })
       .then(() => {
@@ -69,7 +65,7 @@ function EditProfileScreen({ navigation }) {
       setPassword("");
     }
   };
-
+  // Level of the user update
   const levelUpdate = () => {
     firebase
       .firestore()
@@ -83,7 +79,7 @@ function EditProfileScreen({ navigation }) {
       });
   };
 
-  // Working
+  // Getting data for selected user from the db
   const getProfileData = () => {
     firebase
       .firestore()
@@ -106,6 +102,7 @@ function EditProfileScreen({ navigation }) {
       });
   };
 
+  // When sign out or delete user, this will bring user back in the start screen
   const navigatingOut = () => {
     navigation.replace("Start");
     navigation.reset({
@@ -114,7 +111,7 @@ function EditProfileScreen({ navigation }) {
     });
   };
 
-  //Working
+  // Sign out fun
   const signOut = () => {
     auth
       .signOut()
@@ -122,16 +119,13 @@ function EditProfileScreen({ navigation }) {
         SecureStore.deleteItemAsync("userSession")
           .then((res) => console.log("success"))
           .catch((err) => console.error(err));
-          navigatingOut();
+        navigatingOut();
         console.log("You are signed out! Active user:", auth.currentUser);
         navigatingOut();
-
       })
       .catch((err) => alert(err.message));
-
-
   };
-  //Working
+  // Delete user fun
   const deleteUser = () => {
     user
       .delete()
@@ -148,52 +142,45 @@ function EditProfileScreen({ navigation }) {
       });
   };
 
-
+  // Level selection based on likes
   const checkStatus = (numberOfLikes) => {
     if (numberOfLikes >= 0 && numberOfLikes < 5) {
-      setUserLevel("level1");
-      //editProfile();
-      levelUpdate();
-      getProfileData();
+      setUserLevel("Beginner!");
     } else if (numberOfLikes >= 5 && numberOfLikes < 10) {
-      setUserLevel("level2");
-      //editProfile();
-      levelUpdate();
-      getProfileData();
+      setUserLevel("Advanced!");
     } else if (numberOfLikes >= 10 && numberOfLikes < 20) {
-      setUserLevel("level3");
-      //editProfile();
-      levelUpdate();
-      getProfileData();
+      setUserLevel("Profesional!");
+    } else if (numberOfLikes >= 20 && numberOfLikes < 30) {
+      setUserLevel("Beast!");
     }
     console.log("Likes + Level" + numberOfLikes + " " + userLevel);
   };
 
-
-  // useEffect(() => {
-  //   isMountedRef1.current = true;
-  //   if (isMountedRef1.current) {
-      
-  //   }
-  //   return () => isMountedRef1.current = false;
-  // }, [numberOfFeeds, numberOfLikes]);
-
-  useEffect(() => {
-    isMountedRef.current = true;
-    if (isMountedRef.current) {
+  // Everytime we open the screen, we will update the data
+  while (count == 0) {
+    useEffect(() => {
+      console.log("The screen is visible");
       checkStatus(numberOfLikes);
       getProfileData();
-      setEarned((Number(numberOfFeeds) / Number(numberOfLikes)).toFixed(2));
+      setEarned((Number(numberOfLikes) / Number(numberOfFeeds)).toFixed(2));
       levelUpdate(userLevel);
-    }
-    //  console.log(password);
-    return () => (isMountedRef.current = false);
-  }, [numberOfLikes,userLevel,earned]);
+    });
+    count = 1;
+  }
 
-  const earnedCalculation = () => {
-    setEarned((Number(numberOfFeeds) / Number(numberOfLikes)).toFixed(2));
-  };
+  // useEffect(() => {
+  //   isMountedRef.current = true;
+  //   if (isMountedRef.current) {
+  //     checkStatus(numberOfLikes);
+  //     getProfileData();
+  //     setEarned((Number(numberOfFeeds) / Number(numberOfLikes)).toFixed(2));
+  //     levelUpdate(userLevel);
+  //   }
+  //   //  console.log(password);
+  //   return () => (isMountedRef.current = false);
+  // }, [numberOfLikes,userLevel,earned]);
 
+  // Delete user alert dialog
   const deleteUserAlert = () =>
     Alert.alert(
       "Delete!",
@@ -230,7 +217,9 @@ function EditProfileScreen({ navigation }) {
           <Text style={styles.textStats}>Points</Text>
         </View>
         <View style={styles.statusViewInner}>
-          <Text maxLength = {3} style={styles.numberStats}>{earned==="NaN" ? 0 : earned}</Text>
+          <Text maxLength={3} style={styles.numberStats}>
+            {earned === "NaN" ? 0 : earned}
+          </Text>
           <Text style={styles.textStats}>Earned</Text>
         </View>
       </View>
@@ -281,7 +270,6 @@ function EditProfileScreen({ navigation }) {
             }}
             onValueChange={(itemValue, itemIndex) => setCountry(itemValue)}
           >
-
             <Picker.Item
               style={styles.textview}
               label="Country"
@@ -345,7 +333,7 @@ function EditProfileScreen({ navigation }) {
           </View>
         </TouchableOpacity>
       </View>
-      </View>
+    </View>
   );
 }
 
@@ -359,7 +347,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     alignContent: "center",
     borderWidth: 1,
-    borderColor: "black"
+    borderColor: "black",
   },
 
   commentLvlBox: {
@@ -457,7 +445,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: 36,
-    backgroundColor: 'rgba(52, 73, 85, 0.3)',
+    backgroundColor: "rgba(52, 73, 85, 0.3)",
     borderRadius: 4,
     borderColor: "black",
     borderWidth: 1,
