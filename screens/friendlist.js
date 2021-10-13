@@ -9,7 +9,8 @@ function FriendList(props) {
 
     const friendsRef = firestore.collection('users').doc(auth.currentUser.uid).collection('friends');
     const [friends] = useCollectionData(friendsRef, { idField: 'id' });
-    // console.log(friends);
+    
+    //handles deleting a friend
     const deleteFriend = (friendUid, currentId) => {
         firestore.collection('users').doc(auth.currentUser.uid).collection('friends').doc(friendUid).delete().then(() => console.log("deleted")).catch(err => console.error(err));
         firestore.collection('users').doc(friendUid).collection('friends').doc(currentId).delete().then(() => console.log("deleted")).catch(err => console.error(err));
@@ -22,6 +23,7 @@ function FriendList(props) {
             </View>
             <SafeAreaView style={styles.safearea}>
                 <ScrollView>
+                    {/* renders all friends in a list */}
                     {friends && friends.map((item) => <FriendComp key={item.id} navigation={props.navigation} name={item.name} deleteFriend={deleteFriend} currentId={auth.currentUser.uid} friendId={item.id} />)}
                 </ScrollView>
                 <View >

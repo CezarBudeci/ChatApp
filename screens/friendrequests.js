@@ -14,6 +14,7 @@ function FriendRequestList(props) {
     const [username, setUsername] = useState(null);
     const [roomid, setRoomid] = useState(null);
 
+    //gets the username of the current user
     const getUsername = () => {
         firebase
             .firestore()
@@ -26,16 +27,19 @@ function FriendRequestList(props) {
                 }
             });
     };
+
+    //calls the function on component mount
     useEffect(() => {
         getUsername();
     }, []);
     
 
-
+    //handles declining a friend request
     const declineRequest = (id) => {
         firestore.collection('users').doc(auth.currentUser.uid).collection('friendRequests').doc(id).delete().then(() => console.log("deleted")).catch(err => console.error(err));
     }
 
+    //handles accepting a friend request
     const acceptRequest = (id, accepterId, receiverId, accepterName, receiverName) => {
         fetch('https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/privaterooms/.json', {
             method: 'POST',
@@ -55,6 +59,7 @@ function FriendRequestList(props) {
     return (
         <View style={styles.container}>
             <Text style={styles.headerTxt}>Friend Requests</Text>
+            {/* renders all friend requests in a list */}
             {friendrequests && friendrequests.map(item => <FriendrequestComp key={item.id} name={item.name} id={item.id} receiverId={item.uid} acceptId={auth.currentUser.uid} acceptName={username} accept={acceptRequest} decline={declineRequest} />)}
         </View>
     );

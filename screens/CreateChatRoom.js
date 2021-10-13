@@ -15,11 +15,12 @@ function CreateChatRoom(props) {
   const [selectedValue, setSelectedValue] = useState("Country");
   const [chatroomName, setChatroomName] = useState("");
 
-  const chatroomRef = firestore.collection("chatrooms");
-
+  
+  //handles creation of chatroom
   const createChatroom = (e) => {
+    //prevents from null names
     if (chatroomName) {
-
+      //private chatroom
       if (isSelected) {
         fetch(
           `https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/privatechatrooms/.json`,
@@ -40,6 +41,7 @@ function CreateChatRoom(props) {
           })
           .catch((err) => console.error(err));
       } else {
+        //public chatroom
         fetch(
           `https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/publicchatrooms/.json`,
           {

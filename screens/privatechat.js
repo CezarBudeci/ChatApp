@@ -13,11 +13,14 @@ import ChatMessage from "../components/chatmessage";
 import { auth } from "../firebase";
 
 function PrivateChat(props) {
+  //messages variables
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  //functional variables
   const bigListRef = useRef();
   const isMountedRef = useRef(null);
 
+  //handles sending a message
   const sendMessage = () => {
     fetch(
       `https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/privaterooms/${props.route.params.roomData.roomid}/messages/.json`,
@@ -35,6 +38,7 @@ function PrivateChat(props) {
     setMessage("");
   };
 
+  //constantly fetcheds the messages for a live update for both users
   useEffect(() => {
     isMountedRef.current = true;
     if (isMountedRef.current) {
@@ -43,6 +47,7 @@ function PrivateChat(props) {
     return () => isMountedRef.current = false;
   }, [messages]);
 
+  //fetches messages from the db
   const getMessages = () => {
     fetch(
       `https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/privaterooms/${props.route.params.roomData.roomid}/messages/.json`
@@ -52,6 +57,7 @@ function PrivateChat(props) {
       .catch((err) => console.error(err));
   };
 
+  //sets the id for messages
   const addKeys = (data) => {
     if (data) {
       const keys = Object.keys(data);
@@ -62,6 +68,7 @@ function PrivateChat(props) {
     }
   };
 
+  //scroll to bottom of the list function
   const scrollFunc = () => {
     if (typeof bigListRef.current !== "undefined") {
       bigListRef.current.scrollToEnd();
@@ -81,6 +88,7 @@ function PrivateChat(props) {
           keyExtractor={(item) => item.id}
           renderItem={(item) => (
             <ChatMessage
+            // positions the message on the screen based on who sent it
               position={
                 item.item.sender === auth.currentUser.uid
                   ? "flex-end"

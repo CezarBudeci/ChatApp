@@ -20,7 +20,7 @@ import { auth } from './firebase';
 import * as SecureStore from "expo-secure-store";
 import { CommonActions } from '@react-navigation/routers';
 
-
+//used for nested navigations
 const Stack = createStackNavigator();
 const Stack1 = createStackNavigator();
 const Stack2 = createStackNavigator();
@@ -29,9 +29,11 @@ const Stack4 = createStackNavigator();
 const Stack5 = createStackNavigator();
 const BottomTabs = createMaterialBottomTabNavigator();
 
+//stack navigation with login, registration, chatrooms and chatroom feed screens
 const LoginStack = ({ navigation }) => {
   const [isSignedIn, setIsSignedIn] = useState(null);
 
+  //checks if there is a logged in user on component mount
   useEffect(() => {
     SecureStore
       .getItemAsync("userSession")
@@ -69,6 +71,7 @@ const LoginStack = ({ navigation }) => {
     </Stack.Navigator>);
 }
 
+//material bottom tabs navigaion for the main app, contains stack navigations of chatroom screens, private messages screens, friends screens, profile screens
 const AppTabs = () => {
   return (
     <BottomTabs.Navigator barStyle={{ backgroundColor: '#344955' }}>
@@ -79,6 +82,7 @@ const AppTabs = () => {
     </BottomTabs.Navigator>);
 }
 
+//stack navigation of chatroom screens
 const ChatroomList = () => {
   return (
     <Stack2.Navigator>
@@ -90,6 +94,7 @@ const ChatroomList = () => {
   );
 }
 
+//stack navigation of private messages screens
 const MessagesStack = () => {
   return (
     <Stack3.Navigator initialRouteName="MessageList">
@@ -99,6 +104,7 @@ const MessagesStack = () => {
   );
 }
 
+//stack navigation of friends screens
 const FriendsStack = () => {
   return (
     <Stack5.Navigator>
@@ -109,6 +115,7 @@ const FriendsStack = () => {
   );
 }
 
+//stack navigation for profile screens
 const ProfileStack = () => {
   return (
     <Stack4.Navigator>
@@ -117,10 +124,8 @@ const ProfileStack = () => {
   );
 }
 
+//stack navigation combining the login screns stack and the main app tabs navigation
 const FirstStack = () => {
-
-
-
   return (
     <Stack1.Navigator>
       <Stack1.Screen name="Start" component={LoginStack} options={{ headerShown: false }} />

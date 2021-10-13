@@ -63,7 +63,7 @@ function Registration({ navigation }) {
         alert("Password did not match");
       }
     } else {
-      alert("Username taken u idiot. Choose another one you retard");
+      alert("Username taken!");
     }
   };
 

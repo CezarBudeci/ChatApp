@@ -23,6 +23,7 @@ function Feed(props) {
   const isMountedRef1 = useRef(null);
   const isMountedRef2 = useRef(null);
 
+  //constabtly fetches feeds for a live update for all users in the chatroom
   useEffect(() => {
     isMountedRef1.current = true;
     if (isMountedRef1.current) {
@@ -31,6 +32,7 @@ function Feed(props) {
     return () => (isMountedRef1.current = false);
   }, [feeds]);
 
+  //constabtly fetches the profile data for a smooth update of likes and feeds
   useEffect(() => {
     isMountedRef2.current = true;
     if (isMountedRef2.current) {
@@ -39,6 +41,7 @@ function Feed(props) {
     return () => (isMountedRef2.current = false);
   }, [isPrivate, username, fetchedLikes]);
 
+  //handles fetching messages for the chatroom
   const fetchMessages = () => {
     fetch(getLink())
       .then((res) => res.json())
@@ -46,6 +49,7 @@ function Feed(props) {
       .catch((err) => console.error(err));
   };
 
+  //adds ids to data
   const addKeys = (data) => {
     if (data) {
       const keys = Object.keys(data);
@@ -56,6 +60,7 @@ function Feed(props) {
     }
   };
 
+  //sorts the feeds by date
   if (feeds) {
     feeds.sort(function (a, b) {
       return a.createdAt - b.createdAt;
@@ -73,6 +78,7 @@ function Feed(props) {
   const [fetchedLikes, setFetchedLikes] = useState(null);
   const flatlistRef = useRef();
 
+  //gets the right link for chatroom depending on private or public
   const getLink = () => {
     if (props.route.params.private) {
       return `https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/privatechatrooms/${props.route.params.roomId}/messages.json`;
@@ -81,6 +87,7 @@ function Feed(props) {
     }
   };
 
+  //fetches profile details
   const getProfileData = () => {
     firebase
       .firestore()
@@ -97,20 +104,24 @@ function Feed(props) {
       });
   };
 
+  //handles feeds count of the current profile
+  const updateFeeds = () => {
+      auth.currentUser === null ? () => {} :firebase.firestore().collection('users').doc(uid.uid).update({"numberOfFeeds": feedNr + 1}).then(() => {}).catch(err => console.error(err));
+  }
 
-    const updateFeeds = () => {
-        auth.currentUser === null ? () => {} :firebase.firestore().collection('users').doc(uid.uid).update({"numberOfFeeds": feedNr + 1}).then(() => {}).catch(err => console.error(err));
-    }
-
-    const updateLikes = () => {
-        setFetchedLikes(fetchedLikes + 1);
-        auth.currentUser === null ? () => {} : firebase.firestore().collection('users').doc(uid.uid).update({"numberOfLikes": fetchedLikes + 1}).then(() => {}).catch(err => console.error(err));
-    }
+  //handles likes count of the current profile
+  const updateLikes = () => {
+      setFetchedLikes(fetchedLikes + 1);
+      auth.currentUser === null ? () => {} : firebase.firestore().collection('users').doc(uid.uid).update({"numberOfLikes": fetchedLikes + 1}).then(() => {}).catch(err => console.error(err));
+  }
          
-
+  //handles sending messages
   const sendMessage = () => {
+    //prevents sending null messages
     if (message) {
       auth.currentUser === null ? () => {} : setFeedNr(feedNr + 1);
+      //checks if the message is a reply
+      //uses reply template
       if (isReply) {
         fetch(getLink(), {
           method: "POST",
@@ -135,6 +146,7 @@ function Feed(props) {
           .catch((err) => console.error(err));
         updateFeeds();
       } else {
+        //uses message template
         fetch(getLink(), {
           method: "POST",
           body: JSON.stringify({
@@ -161,6 +173,7 @@ function Feed(props) {
     }
   };
 
+  //handles choosing a reply
   const chooseReply = (messid, repid, repname) => {
     setReplydoc(messid);
     feeds.forEach((item) => {
@@ -173,6 +186,7 @@ function Feed(props) {
     setIsReply(true);
   };
 
+  //handles canceling the reply
   const cancelReply = () => {
     setReplydoc("");
     setReplyMess("");
@@ -181,6 +195,7 @@ function Feed(props) {
     setIsReply(false);
   };
 
+  //scrolls to bottom of the list
   const scrollFunc = () => {
     if (typeof flatlistRef.current !== "undefined") {
       flatlistRef.current.scrollToEnd();
@@ -192,6 +207,7 @@ function Feed(props) {
       <Text style={styles.texttitle}>{props.route.params.roomName}</Text>
 
       <View style={styles.feedsArea}>
+        {/* renders a biglist with all messages */}
         <BigList
           ref={flatlistRef}
           onContentSizeChange={scrollFunc}

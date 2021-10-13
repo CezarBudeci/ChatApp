@@ -7,6 +7,7 @@ import { auth, firestore } from '../firebase';
 
 
 function ChatList({ navigation }) {
+    //gets the private chats for the logged in user
     const chatsRef = firestore.collection('users').doc(auth.currentUser.uid).collection('friends');
     const[chats] = useCollectionData(chatsRef, { idField: 'friendId' });
 
@@ -18,6 +19,7 @@ function ChatList({ navigation }) {
                 <Text style = {styles.texttitle}>Messaging</Text>
             </View>
             <SafeAreaView style = {styles.safearea}>
+                {/* renders the private chats in a flatlist */}
                 <FlatList data = {chats} keyExtractor = {item => item.friendId} renderItem = {item => <MessageListTemplate navigation = {navigation} friendName = {item.item.name} friendId = {item.item.friendId} />} />
             </SafeAreaView>
             <StatusBar style = 'auto' />

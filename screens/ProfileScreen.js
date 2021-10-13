@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import firebase from "firebase";
 import { auth } from '../firebase';
 
 function ProfileScreen(props) {
-  
-  
+  //profile variables
   const[level, setLevel] = useState(null);
   const[username, setUsername] = useState(null);
   const[feedNr, setFeedNr] = useState(null);
   const[fetchedLikes, setFetchedLikes] = useState(null);
   const[currentName, setCurrentName] = useState(null);
   
+  //get profile details from the db
   const getProfileData = () => {
     firebase
       .firestore()
@@ -28,6 +28,7 @@ function ProfileScreen(props) {
     });
   }
 
+  //gets the current username
   const setCurrent = () => {
     firebase
       .firestore()
@@ -42,12 +43,13 @@ function ProfileScreen(props) {
     });
   }
 
+  //calls the functions on component mount
   useEffect(() => {
     getProfileData();
     setCurrent();
   }, []);
   
-
+  //handles sending a friend request
   const sendFriendRequest = () => {
     firebase.firestore().collection('users').doc(props.route.params.uid).collection('friendRequests').add({uid: auth.currentUser.uid, name: currentName});
     props.navigation.goBack();
