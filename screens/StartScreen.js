@@ -17,7 +17,7 @@ import * as SecureStore from "expo-secure-store";
 function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [psswrd, setPsswrd] = useState("");
-  // const navigation = useNavigation();
+  // Const navigation = useNavigation();
   async function save(key, value) {
 
     const res = await SecureStore.setItemAsync(key, value);
@@ -32,7 +32,7 @@ function Login({ navigation }) {
 
     // //Making the email to lowercase and removing whitespace
     // setEmail(email.toLowerCase().replace(/ /g, ""));
-    //Signing in and creating a session that will only end when user signs out
+    // Signing in and creating a session that will only end when user signs out
     // firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     auth
       .signInWithEmailAndPassword(email, psswrd)

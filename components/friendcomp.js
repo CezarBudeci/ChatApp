@@ -5,12 +5,12 @@ import { auth, firestore } from '../firebase';
 function FriendComp(props) {
   const [roomData, setRoomData] = useState(null);
 
-  //handles fetching the id of the room for private messaging
+  // Handles fetching the id of the room for private messaging
   const getRoomId = () => {
     firestore.collection('users').doc(auth.currentUser.uid).collection('friends').doc(props.friendId).get().then((doc) => { if (doc.exists) { setRoomData(doc.data()) } else { console.error("no such document") } }).catch(err => console.error(err));
   }
 
-  //fetches the id of the room for private messaging
+  // Fetches the id of the room for private messaging
   useEffect(() => {
     getRoomId();
   }, []);

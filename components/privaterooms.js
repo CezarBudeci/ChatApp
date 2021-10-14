@@ -9,7 +9,7 @@ function PrivateRooms(props) {
   const[profileData,setProfileData] = useState(null);
   const isMountedRef = useRef(null);
 
-  //sorts the chatrooms by name
+  // Sorts the chatrooms by name
   if (chatrooms) {
     chatrooms.sort(function (a, b) {
       var nameA = a.name.toUpperCase();
@@ -24,7 +24,7 @@ function PrivateRooms(props) {
     });
   }
 
-  //fetches the chatrooms constantly for live updates
+  // Fetches the chatrooms constantly for live updates
   useEffect(() => {
     isMountedRef.current = true;
     if(isMountedRef.current) {
@@ -34,7 +34,7 @@ function PrivateRooms(props) {
     return () => isMountedRef.current = false;
   }, [chatrooms]);
 
-  //handles fetching the chatrooms
+  // Handles fetching the chatrooms
   const fetchRooms = () => {
     fetch(
       "https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/privatechatrooms/.json"
@@ -44,7 +44,7 @@ function PrivateRooms(props) {
       .catch((err) => console.error(err));
   };
 
-  //adds ids to data
+  // Adds ids to data
   const addKeys = (data) => {
     const keys = Object.keys(data);
     const valueKeys = Object.values(data).map((item, index) =>
@@ -53,13 +53,13 @@ function PrivateRooms(props) {
     setChatrooms(valueKeys);
   };
 
-  //fetches profile data on component mount
+  // Fetches profile data on component mount
   useEffect(() => {
     firestore.collection('users').doc(auth.currentUser.uid).get().then(res => setProfileData(res.data())).catch(err => console.error(err));
   }, []);
   
   return (
-    // renders a flatlist with the chatrooms
+    // Renders a flatlist with the chatrooms based on the country selection
     <FlatList
       style={styles.filteredArea}
       data={chatrooms}

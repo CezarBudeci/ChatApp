@@ -7,7 +7,7 @@ function FilteredRooms(props) {
   const [chatrooms, setChatrooms] = useState([]);
   const isMountedRef = useRef(null);
 
-  //cpmstantly fetches public chatrooms for a live update
+  // Comstantly fetches public chatrooms for a live update
   useEffect(() => {
     isMountedRef.current = true;
     if(isMountedRef.current) {
@@ -16,7 +16,7 @@ function FilteredRooms(props) {
     return () => isMountedRef.current = false;
   }, [chatrooms]);
 
-  //handles fetching of public chatrooms
+  // Handles fetching of public chatrooms
   const fetchRooms = () => {
     fetch(
       "https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/publicchatrooms/.json"
@@ -26,7 +26,7 @@ function FilteredRooms(props) {
       .catch((err) => console.error(err));
   };
 
-  //adds ids to data
+  // Adds ids to data
   const addKeys = (data) => {
     const keys = Object.keys(data);
     const valueKeys = Object.values(data).map((item, index) =>

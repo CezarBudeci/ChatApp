@@ -10,7 +10,7 @@ function FriendList(props) {
     const friendsRef = firestore.collection('users').doc(auth.currentUser.uid).collection('friends');
     const [friends] = useCollectionData(friendsRef, { idField: 'id' });
     
-    //handles deleting a friend
+    // Handles deleting a friend
     const deleteFriend = (friendUid, currentId) => {
         firestore.collection('users').doc(auth.currentUser.uid).collection('friends').doc(friendUid).delete().then(() => console.log("deleted")).catch(err => console.error(err));
         firestore.collection('users').doc(friendUid).collection('friends').doc(currentId).delete().then(() => console.log("deleted")).catch(err => console.error(err));

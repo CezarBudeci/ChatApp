@@ -7,7 +7,7 @@ import { auth, firestore } from '../firebase';
 
 
 function ChatList({ navigation }) {
-    //gets the private chats for the logged in user
+    // Gets the private chats for the logged in user
     const chatsRef = firestore.collection('users').doc(auth.currentUser.uid).collection('friends');
     const[chats] = useCollectionData(chatsRef, { idField: 'friendId' });
 
