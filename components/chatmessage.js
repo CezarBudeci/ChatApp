@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 
-//component for private messaging
+// Component for private messaging
 function ChatMessage(props) {
 
     return(

@@ -16,11 +16,11 @@ function CreateChatRoom(props) {
   const [chatroomName, setChatroomName] = useState("");
 
   
-  //handles creation of chatroom
+  // Handles creation of chatroom
   const createChatroom = (e) => {
-    //prevents from null names
+    // Prevents from null names
     if (chatroomName) {
-      //private chatroom
+      // Private chatroom
       if (isSelected) {
         fetch(
           `https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/privatechatrooms/.json`,
@@ -41,7 +41,7 @@ function CreateChatRoom(props) {
           })
           .catch((err) => console.error(err));
       } else {
-        //public chatroom
+        // Public chatroom
         fetch(
           `https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/publicchatrooms/.json`,
           {

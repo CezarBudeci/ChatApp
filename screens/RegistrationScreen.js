@@ -30,7 +30,7 @@ function Registration({ navigation }) {
   const [country, setCountry] = useState("");
   const [allUserNames, setAllUserNames] = useState([]);
 
-  // db = firestore?
+  // Db = firestore
   const ref = firestore.collection('users');
   const query = ref.where('userName', '==', userName);
   const [userNamArr] = useCollectionData(query, { idField: 'id' });

@@ -16,7 +16,7 @@ function FeedComponent(props) {
   const [isFriend, setIsFriend] = useState(false);
   const isMountedRef = useRef(null);
 
-  //handles check if the message sender is a friend of the current logged in user
+  // Handles check if the message sender is a friend of the current logged in user
   const checkFriend = () => {
     auth.currentUser === null
       ? () => {}
@@ -36,12 +36,12 @@ function FeedComponent(props) {
           .catch((err) => console.error(err));
   };
 
-  //calls the function on component mount
+  // Calls the function on component mount
   useEffect(() => {
     checkFriend();
   }, []);
 
-  //updates likes on button click
+  // Updates likes on button click
   useEffect(() => {
     isMountedRef.current = true;
     if (isMountedRef.current) {
@@ -50,7 +50,7 @@ function FeedComponent(props) {
     return () => (isMountedRef.current = false);
   }, [props.countBtn]);
 
-  //handles getting the right link based on the room id and message id
+  // Handles getting the right link based on the room id and message id
   const getLink = (id) => {
     if (props.private) {
       return `https://chatapp-a1d56-default-rtdb.europe-west1.firebasedatabase.app/privatechatrooms/${props.roomId}/messages/${id}/.json`;
@@ -59,7 +59,7 @@ function FeedComponent(props) {
     }
   };
 
-  //handles adding a like to a feed(message)
+  // Handles adding a like to a feed(message)
   const addLike = (id) => {
     setLikes(likes + 1);
 

@@ -38,7 +38,6 @@ function EditProfileScreen({ navigation }) {
   const [numberOfFeeds, setNumberOfFeed] = useState(0);
   const [numberOfLikes, setNumberOfLikes] = useState(0);
   const [earned, setEarned] = useState(0);
-  //const isMountedRef = useRef(false);
 
   // Check if screen is clicked again
   let count = 0;
@@ -171,12 +170,16 @@ function EditProfileScreen({ navigation }) {
   const checkStatus = () => {
     if (numberOfLikes >= 0 && numberOfLikes < 5) {
       setUserLevel("Beginner!");
+      levelUpdate();
     } else if (numberOfLikes >= 5 && numberOfLikes < 10) {
+      levelUpdate();
       setUserLevel("Advanced!");
     } else if (numberOfLikes >= 10 && numberOfLikes < 20) {
       setUserLevel("Profesional!");
+      levelUpdate();
     } else if (numberOfLikes >= 20 && numberOfLikes < 30) {
       setUserLevel("Beast!");
+      levelUpdate();
     }
     console.log("Likes + Level" + numberOfLikes + " " + userLevel);
   };
@@ -192,24 +195,7 @@ function EditProfileScreen({ navigation }) {
     setEarned((Number(numberOfLikes) / Number(numberOfFeeds)).toFixed(2));
     levelUpdate();
   },[]);
-  //getProfileData();
   
-//   while (count == 0) {
-//   useEffect(() => {
-//     isMountedRef.current = true;
-//     if (isMountedRef.current) {
-//       checkStatus(numberOfLikes);
-//       getProfileData();
-//       setEarned((Number(numberOfFeeds) / Number(numberOfLikes)).toFixed(2));
-//       //levelUpdate(userLevel);
-//     }
-//     //  console.log(password);
-//     return () => (isMountedRef.current = false);
-//   }, [numberOfLikes,userLevel,earned]);
-//   count = 1;
-//   console.log(count);
-// }
-
   // Delete user alert dialog
   const deleteUserAlert = () =>
     Alert.alert(

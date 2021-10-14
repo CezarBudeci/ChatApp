@@ -7,7 +7,7 @@ import { auth } from '../firebase';
 
 function ChatRoomSelection({ navigation }) {
   const [searchCrit, setSearchCrit] = useState("");
-  //private chatrooms and create a chatroom button are hidden from the non logged in user
+  // Private chatrooms and create a chatroom button are hidden from the non logged in user
   return (
     <View style={styles.container}>
       <Text style={styles.texttitle}>Chat rooms</Text>

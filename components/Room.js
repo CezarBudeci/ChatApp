@@ -4,7 +4,7 @@ import { auth } from '../firebase';
 
 // Component used in privaterooms.js
 function Room(props) {
-  //handles opening a chatroom
+  // Handles opening a chatroom
   const openChatroom = () => {
     props.navigation.navigate(auth.currentUser === null ? "ChatroomAnon" : "Chatroom", {
       roomId: props.roomId,
