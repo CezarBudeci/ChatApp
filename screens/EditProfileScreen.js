@@ -184,7 +184,7 @@ function EditProfileScreen({ navigation }) {
     console.log("Likes + Level" + numberOfLikes + " " + userLevel);
   };
   console.log(count);
-
+  levelUpdate();
   // Everytime we open the screen, we will update the data
  
   useEffect(() => {
