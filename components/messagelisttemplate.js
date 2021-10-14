@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     textperson: {
         fontSize: 14,
         fontFamily: 'Roboto',
-        color: '#ACACAC',
+        color: 'black',
     },
     chatbtn: {
         paddingBottom: 8,
